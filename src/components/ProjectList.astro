@@ -1,0 +1,74 @@
+---
+import type { Project } from '../lib/content';
+
+interface Props {
+  projects: Project[];
+}
+const { projects } = Astro.props;
+---
+
+<ol class="items">
+  {
+    projects.map((p) => (
+      <li>
+        <span class="label year">{p.data.year}</span>
+        <div>
+          <a class="title" href={`/projects/${p.id}/`}>
+            {p.data.title}
+          </a>
+          {p.data.summary && <p class="summary">{p.data.summary}</p>}
+          {(p.data.status || p.data.stack.length > 0) && (
+            <p class="label meta">{[p.data.status, p.data.stack.join(', ')].filter(Boolean).join(' · ')}</p>
+          )}
+        </div>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--rule);
+  }
+  li {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr;
+    gap: var(--space-2);
+    padding-block: var(--space-3);
+    border-bottom: 1px solid var(--rule);
+  }
+  .year {
+    padding-top: 0.45em;
+  }
+  .title {
+    font-size: 1.3em;
+    line-height: 1.25;
+    font-weight: 560;
+    text-decoration: none;
+    text-wrap: balance;
+  }
+  .title:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+  }
+  .summary {
+    margin: 0.35em 0 0;
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+  .meta {
+    margin: 0.7em 0 0;
+  }
+  @media (max-width: 30rem) {
+    li {
+      grid-template-columns: 1fr;
+      gap: 0.25rem;
+    }
+    .year {
+      padding-top: 0;
+    }
+  }
+</style>

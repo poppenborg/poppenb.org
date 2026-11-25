@@ -1,0 +1,188 @@
+---
+/**
+ * The landing page's visual hook: one large line of Literata whose weight and
+ * colour swell around the pointer (desktop) or travel with scrolling (touch).
+ * Lines are locked at their widest so the text never re-wraps while it moves.
+ * With prefers-reduced-motion it stays still.
+ */
+interface Props {
+  text: string;
+}
+const { text } = Astro.props;
+const words = text.split(/\s+/).filter(Boolean);
+---
+
+<h1 class="hook" data-hook>
+  <span class="sr-only">{text}</span>
+  <span class="lines" aria-hidden="true"
+    >{
+      words.map((word, i) => (
+        <>
+          {i > 0 && ' '}
+          <span class="w">
+            {[...word].map((ch) => (
+              <span class="c">{ch}</span>
+            ))}
+          </span>
+        </>
+      ))
+    }</span
+  >
+</h1>
+
+<style>
+  .hook {
+    margin: 0;
+    font-size: clamp(2.6rem, 1.2rem + 7vw, 5.75rem);
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+    font-weight: 320;
+    text-wrap: balance;
+  }
+  .lines.locked {
+    white-space: nowrap;
+  }
+  .w {
+    white-space: nowrap;
+  }
+  .c {
+    --p: 0;
+    font-weight: calc(320 + var(--p) * 540);
+    color: color-mix(in oklab, var(--accent) calc(var(--p) * 100%), var(--text));
+  }
+  .measuring .c {
+    font-weight: 860;
+  }
+</style>
+
+<script>
+  const hook = document.querySelector<HTMLElement>('[data-hook]');
+  const lines = hook?.querySelector<HTMLElement>('.lines');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  if (hook && lines && !reduce.matches) {
+    const chars = [...lines.querySelectorAll<HTMLElement>('.c')];
+    const words = [...lines.querySelectorAll<HTMLElement>('.w')];
+    const touch = window.matchMedia('(hover: none)').matches;
+
+    // Lock line breaks at the heaviest weight, so swelling never re-wraps.
+    const lock = () => {
+      lines.querySelectorAll('br').forEach((br) => br.remove());
+      lines.classList.remove('locked');
+      hook.classList.add('measuring');
+      let top = words[0]?.offsetTop;
+      for (const w of words) {
+        if (w.offsetTop > top + 2) {
+          // Drop the space before the break, then break.
+          const prev = w.previousSibling;
+          if (prev?.nodeType === Node.TEXT_NODE) prev.textContent = '';
+          w.before(document.createElement('br'));
+          top = w.offsetTop;
+        }
+      }
+      hook.classList.remove('measuring');
+      lines.classList.add('locked');
+    };
+
+    const restoreSpaces = () => {
+      lines.querySelectorAll('br').forEach((br) => br.remove());
+      for (const w of words.slice(1)) {
+        const prev = w.previousSibling;
+        if (prev?.nodeType === Node.TEXT_NODE) prev.textContent = ' ';
+      }
+    };
+
+    // Each char's intensity (0..1) eases toward its target every frame.
+    const current = new Float32Array(chars.length);
+    const target = new Float32Array(chars.length);
+    let frame = 0;
+    const tick = () => {
+      let moving = false;
+      for (let i = 0; i < chars.length; i++) {
+        const d = target[i] - current[i];
+        if (Math.abs(d) > 0.002) {
+          current[i] += d * 0.18;
+          moving = true;
+        } else current[i] = target[i];
+        chars[i].style.setProperty('--p', current[i].toFixed(3));
+      }
+      frame = moving ? requestAnimationFrame(tick) : 0;
+    };
+    const kick = () => {
+      if (!frame) frame = requestAnimationFrame(tick);
+    };
+
+    // A wave centred on character index `at`, `spread` chars wide.
+    const wave = (at: number, spread = 3.2) => {
+      for (let i = 0; i < chars.length; i++) {
+        const d = i - at;
+        target[i] = Math.exp(-(d * d) / (2 * spread * spread));
+      }
+      kick();
+    };
+
+    // Desktop: swell around the pointer, measured in px from each char's centre.
+    let centres: [number, number][] = [];
+    const measure = () => {
+      centres = chars.map((c) => {
+        const r = c.getBoundingClientRect();
+        return [r.left + r.width / 2 + scrollX, r.top + r.height / 2 + scrollY];
+      });
+    };
+    const onPointer = (e: PointerEvent) => {
+      if (e.pointerType !== 'mouse') return;
+      const sigma = parseFloat(getComputedStyle(hook).fontSize) * 0.9;
+      const x = e.pageX;
+      const y = e.pageY;
+      for (let i = 0; i < chars.length; i++) {
+        const dx = centres[i][0] - x;
+        const dy = (centres[i][1] - y) * 1.6;
+        target[i] = Math.exp(-(dx * dx + dy * dy) / (2 * sigma * sigma));
+      }
+      kick();
+    };
+    const onLeave = () => {
+      target.fill(0);
+      kick();
+    };
+
+    // Touch: the wave travels through the line as the hook scrolls by.
+    const onScroll = () => {
+      const end = hook.offsetTop + hook.offsetHeight;
+      const t = Math.min(1, Math.max(0, scrollY / end));
+      wave(-4 + t * (chars.length + 8));
+    };
+
+    const layout = () => {
+      restoreSpaces();
+      lock();
+      measure();
+    };
+
+    document.fonts.ready.then(() => {
+      layout();
+      // One sweep on arrival, then rest.
+      const start = performance.now();
+      const sweep = (now: number) => {
+        const t = Math.min(1, (now - start) / 1400);
+        wave(-4 + t * (chars.length + 8), 2.6);
+        if (t < 1) requestAnimationFrame(sweep);
+        else if (touch) onScroll();
+        else onLeave();
+      };
+      requestAnimationFrame(sweep);
+
+      if (touch) {
+        addEventListener('scroll', onScroll, { passive: true });
+      } else {
+        addEventListener('pointermove', onPointer, { passive: true });
+        document.documentElement.addEventListener('pointerleave', onLeave);
+      }
+      let resizeTimer = 0;
+      addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = window.setTimeout(layout, 120);
+      });
+    });
+  }
+</script>
