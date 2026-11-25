@@ -1,0 +1,39 @@
+---
+import { render } from 'astro:content';
+import Article from '../../layouts/Article.astro';
+import MetaBlock from '../../components/MetaBlock.astro';
+import PostList from '../../components/PostList.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import { formatDate, getPosts, readingTime, type Post } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({ params: { id: post.id }, props: { post, posts } }));
+}
+
+const { post, posts } = Astro.props as { post: Post; posts: Post[] };
+const { data } = post;
+const { Content } = await render(post);
+const latest = posts.filter((p) => p.id !== post.id).slice(0, 5);
+
+const meta = [
+  { label: 'Published', value: formatDate(data.pubDate) },
+  { label: 'Reading time', value: `${readingTime(post.body)} min` },
+  ...(data.topics.length ? [{ label: 'Topics', value: data.topics.join(', ') }] : []),
+];
+---
+
+<Article title={data.title} description={data.description} back={{ href: '/posts/', label: 'Posts' }}>
+  <MetaBlock slot="meta" items={meta} />
+  <Content />
+  {
+    latest.length > 0 && (
+      <section slot="after" aria-labelledby="latest-posts">
+        <SectionHeading id="latest-posts" href="/posts/" linkLabel="All posts">
+          Latest posts
+        </SectionHeading>
+        <PostList posts={latest} />
+      </section>
+    )
+  }
+</Article>
