@@ -1,0 +1,71 @@
+---
+import '../styles/global.css';
+import { SITE } from '../config';
+import { getPosts, getSiteText } from '../lib/content';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  /** Page title; the site name is appended. Omit on the landing page. */
+  title?: string;
+  description?: string;
+  /** Social card image URL (absolute or root-relative). */
+  image?: string;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+}
+
+const { title, description, image, type = 'website', noindex = false } = Astro.props;
+const home = await getSiteText('home');
+const hasPosts = (await getPosts()).length > 0;
+
+const siteName = home?.data.name ?? SITE.domain;
+const fullTitle = title ? `${title} · ${siteName}` : siteName;
+const desc = description ?? home?.data.description;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = image ? new URL(image, Astro.site).href : undefined;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#14130F" />
+    <title>{fullTitle}</title>
+    {desc && <meta name="description" content={desc} />}
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title={siteName} href="/rss.xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:title" content={title ?? siteName} />
+    <meta property="og:url" content={canonical} />
+    {desc && <meta property="og:description" content={desc} />}
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+
+    {
+      SITE.goatcounter && (
+        <script
+          is:inline
+          data-goatcounter={`https://${SITE.goatcounter}.goatcounter.com/count`}
+          async
+          src="https://gc.zgo.at/count.js"
+        />
+      )
+    }
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <Header siteName={siteName} hasPosts={hasPosts} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer siteName={siteName} hasPosts={hasPosts} links={home?.data.links ?? []} />
+  </body>
+</html>

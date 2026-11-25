@@ -1,0 +1,32 @@
+---
+/**
+ * A visible placeholder for a missing fact. Facts only come from src/content/
+ * and public/; never fill one in. Each use is also logged during the build.
+ */
+interface Props {
+  what: string;
+  block?: boolean;
+}
+const { what, block = false } = Astro.props;
+console.warn(`[TODO] ${Astro.url.pathname}: ${what}`);
+const Tag = block ? 'p' : 'span';
+---
+
+<Tag class="todo">TODO: {what}</Tag>
+
+<style>
+  .todo {
+    display: inline-block;
+    padding: 0.1em 0.45em;
+    border: 1px dashed var(--accent);
+    border-radius: 3px;
+    color: var(--accent);
+    font-size: 0.8em;
+    letter-spacing: 0.04em;
+    overflow-wrap: anywhere;
+  }
+  p.todo {
+    display: block;
+    padding: 0.6em 0.8em;
+  }
+</style>
