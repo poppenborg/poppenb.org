@@ -56,7 +56,7 @@ Any missing fact renders as a visible `TODO` and is reported. Claude never write
 
 ## Design
 
-- **Font:** Literata (variable, self-hosted via Fontsource, no Google Fonts request, so nothing in the privacy policy). Used for everything. Labels use tracked uppercase small sizes of the same family. Adding a second font needs Leonard's OK.
+- **Font:** Literata (variable, self-hosted via Fontsource, no Google Fonts request, so nothing in the privacy policy). Used for everything except code, which uses the system monospace stack (approved by Leonard, 2026-11-25). Labels use tracked uppercase small sizes of the same family. Adding a second font needs Leonard's OK.
 - **Theme: dark only.** No light mode and no toggle. `color-scheme: dark`.
 - **Colour tokens:** defined in DESIGN.md.
 - **Layout:** a single reading column of about 66 characters, generous line height, and works from 375 px wide upwards.

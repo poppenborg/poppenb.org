@@ -11,7 +11,7 @@ The list above describes the reference site. Where it conflicts with SPEC.md (fo
 
 ## Tokens (approved 2026-11-25)
 
-**Font:** Literata, variable (`wght` and `opsz` axes), self-hosted. It is the only font. Labels are small, uppercase, letter-spaced Literata.
+**Font:** Literata, variable (`wght` and `opsz` axes), self-hosted. It is the only font, except that code uses the system monospace stack (approved by Leonard 2026-11-25; no web font is loaded for it). Labels are small, uppercase, letter-spaced Literata.
 
 **Theme:** dark only (`color-scheme: dark`). No light mode, no toggle.
 

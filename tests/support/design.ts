@@ -37,7 +37,7 @@ export function designTests() {
       expect(readFileSync(`${dir}/${f}`, 'utf8'), f).not.toMatch(/prefers-color-scheme\s*:\s*light/);
   });
 
-  test('Literata is the only font, on every page', async ({ browser }, info) => {
+  test('Literata is the only font on every page (code may use system monospace)', async ({ browser }, info) => {
     const page = await browser.newPage({ baseURL: info.project.use.baseURL, reducedMotion: 'reduce' });
     const problems: string[] = [];
     for (const path of builtPages(buildOf(info))) {
@@ -48,6 +48,8 @@ export function designTests() {
           const hasText = [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent!.trim());
           if (!hasText) continue;
           const first = getComputedStyle(el).fontFamily.split(',')[0].trim().replace(/["']/g, '');
+          // Code uses the system monospace stack (approved by Leonard, 2026-11-25).
+          if (el.closest('code, pre, kbd, samp') && /monospace$/.test(getComputedStyle(el).fontFamily)) continue;
           if (first !== 'Literata Variable') out.add(`${el.tagName.toLowerCase()}${el.className ? '.' + el.className : ''}: ${first}`);
         }
         const faces = [...document.fonts].filter((f) => f.status === 'loaded').map((f) => f.family.replace(/["']/g, ''));
