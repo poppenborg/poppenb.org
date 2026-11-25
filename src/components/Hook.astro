@@ -1,7 +1,9 @@
 ---
 /**
- * The landing page's visual hook: one large line of Literata whose weight and
- * colour swell around the pointer (desktop) or travel with scrolling (touch).
+ * The landing page's visual hook: one large line of Literata whose weight,
+ * optical size and colour swell around the pointer (desktop) or travel with
+ * scrolling (touch). At rest each letter uses the optical size that matches
+ * the line's font size; swelling lowers it towards a sturdier text cut.
  * Lines are locked at their widest so the text never re-wraps while it moves.
  * With prefers-reduced-motion it stays still.
  */
@@ -38,6 +40,10 @@ const words = text.split(/\s+/).filter(Boolean);
     letter-spacing: -0.02em;
     font-weight: 320;
     text-wrap: balance;
+    /* Optical size at rest (set from the real font size by the script) and
+       when fully swollen. Literata's opsz axis runs from 7 to 72. */
+    --opsz-rest: 72;
+    --opsz-swell: 24;
   }
   .lines.locked {
     white-space: nowrap;
@@ -48,10 +54,12 @@ const words = text.split(/\s+/).filter(Boolean);
   .c {
     --p: 0;
     font-weight: calc(320 + var(--p) * 540);
+    font-variation-settings: 'opsz' calc(var(--opsz-rest) + var(--p) * (var(--opsz-swell) - var(--opsz-rest)));
     color: color-mix(in oklab, var(--accent) calc(var(--p) * 100%), var(--text));
   }
   .measuring .c {
     font-weight: 860;
+    font-variation-settings: 'opsz' var(--opsz-swell);
   }
 </style>
 
@@ -59,6 +67,15 @@ const words = text.split(/\s+/).filter(Boolean);
   const hook = document.querySelector<HTMLElement>('[data-hook]');
   const lines = hook?.querySelector<HTMLElement>('.lines');
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  // Rest at the optical size that matches the rendered size, as
+  // font-optical-sizing: auto would (it is overridden once opsz is explicit).
+  const restOpsz = () => {
+    if (!hook) return;
+    const px = parseFloat(getComputedStyle(hook).fontSize);
+    hook.style.setProperty('--opsz-rest', String(Math.min(72, Math.max(7, Math.round(px)))));
+  };
+  restOpsz();
 
   if (hook && lines && !reduce.matches) {
     const chars = [...lines.querySelectorAll<HTMLElement>('.c')];
@@ -154,6 +171,7 @@ const words = text.split(/\s+/).filter(Boolean);
     };
 
     const layout = () => {
+      restOpsz();
       restoreSpaces();
       lock();
       measure();
