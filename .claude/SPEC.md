@@ -1,6 +1,6 @@
 # poppenb.org: site spec (v1)
 
-Status: draft for Leonard's review, 2026-11-25. Nothing is built until he approves it.
+Status: draft for Leonard's review, 2026-11-25. Nothing is built until Leonard approves it.
 
 ## Purpose
 
