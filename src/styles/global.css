@@ -1,5 +1,6 @@
 @import '@fontsource-variable/literata/opsz.css';
 @import '@fontsource-variable/literata/opsz-italic.css';
+@import '@fontsource/vt323/400.css';
 
 /* Tokens: keep in sync with .claude/DESIGN.md */
 :root {
@@ -12,6 +13,8 @@
   --accent: #e8a25a;
 
   --font: 'Literata Variable', Georgia, 'Times New Roman', serif;
+  /* Headings and navigation. VT323 has one weight, so never bold it. */
+  --font-display: 'VT323', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   --measure: 38rem;
   --gutter: clamp(1rem, 5vw, 2rem);
   --space-1: 0.5rem;
@@ -90,6 +93,18 @@ img {
   padding-inline: var(--gutter);
 }
 
+/* Headings (except the landing hook, which needs Literata's variable axes)
+   and navigation are set in VT323. */
+h1,
+h2,
+h3,
+.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-synthesis: none;
+  letter-spacing: 0;
+}
+
 /* Tracked uppercase micro-label: the site's "typeset" signature. */
 .label {
   font-size: 0.7rem;
@@ -136,17 +151,15 @@ img {
   text-wrap: pretty;
 }
 .prose h2 {
-  margin: 2.2em 0 0;
-  font-size: 1.45em;
-  line-height: 1.25;
-  font-weight: 620;
-  letter-spacing: -0.01em;
+  margin: 2em 0 0;
+  font-size: 1.9em;
+  line-height: 1.1;
   text-wrap: balance;
 }
 .prose h3 {
   margin: 1.8em 0 0;
-  font-size: 1.1em;
-  font-weight: 620;
+  font-size: 1.45em;
+  line-height: 1.15;
 }
 .prose h2 + *,
 .prose h3 + * {
