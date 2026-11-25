@@ -1,0 +1,28 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Not found" noindex>
+  <div class="wrap lost">
+    <p class="label">Error 404</p>
+    <h1>This page went to press without being written.</h1>
+    <p><a href="/">Back to the front page</a> or <a href="/projects/">see the projects</a>.</p>
+  </div>
+</Base>
+
+<style>
+  .lost {
+    padding-block: var(--space-6) var(--space-5);
+  }
+  .lost p:first-child {
+    margin: 0;
+  }
+  h1 {
+    margin: 0.4rem 0 var(--space-3);
+    font-size: clamp(2rem, 1.4rem + 3vw, 3rem);
+    line-height: 1.12;
+    font-weight: 560;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+</style>
