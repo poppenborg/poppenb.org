@@ -12,6 +12,8 @@ Leonard's personal website (poppenb.org): a static site built with Astro 7, Type
 - `npm run build`: static build into `dist/` (drafts excluded). Also writes `sitemap-index.xml` once pages exist.
 - `npm run preview`: serve the built `dist/`.
 - `npm run check`: type-check `.ts` and `.astro` files.
+- `npm run shots`: build, then screenshot every page at 375 px and 1280 px into `shots/`. Fails if a page scrolls sideways. The build log lists every `[TODO]`.
+- `npm run shots:fixtures`: the same, with the sample entries in `src/fixtures/` added, so every layout (project, post, footer links) can be checked before real content exists.
 
 ## Rules
 
@@ -29,14 +31,21 @@ SPEC.md is the approved scope for v1, including what is out of scope and the "do
 
 ## Workflow
 
-- After visual changes, run `npm run shots`, open the images and compare them
-  with DESIGN.md before saying you're done. (The `shots` script and Playwright are not set up yet.)
+- After visual changes, run `npm run shots` (and `npm run shots:fixtures` while content is sparse), open the images and compare them
+  with DESIGN.md before saying you're done.
 - Small commits, one per section.
 
 ## Architecture
 
-- Posts are Markdown in `src/content/posts/` (projects will be in `src/content/projects/`), loaded as the `posts` content collection defined in `src/content.config.ts`. The frontmatter schema there (`title`, `description`, `pubDate`, `topics`, `draft`) is the single source of truth; add fields there first.
-- Always read posts through `getPosts()` in `src/posts.ts`, never `getCollection` directly. It applies the draft filter and newest-first sort.
-- `site` in `astro.config.mjs` must stay the production URL, because the sitemap (and any RSS feed) builds links from it.
-- There are no pages yet (`src/pages/` is empty). The first design draft should introduce a shared layout in `src/layouts/` for the `<head>` markup.
+- Content collections are defined in `src/content.config.ts`: `projects`, `posts` and `site` (the texts `home`, `imprint`, `privacy`). The schemas there are the single source of truth for frontmatter; `src/fixtures/` shows a valid example of each. An entry's id is its file name, so a project lives at `/projects/<file-name>/`.
+- Read content only through `src/lib/content.ts` (`getProjects`, `getPosts`, `getSiteText`), never `getCollection` directly. It applies the draft filter (drafts show in `astro dev` only) and newest-first sorting.
+- With `FIXTURES=1` the loaders also read `src/fixtures/`. Never set it for a deploy.
+- A missing fact renders through `src/components/Todo.astro`, which also logs `[TODO]` during the build.
+- **Hidden posts:** nav, footer and landing only show posts when `getPosts()` is non-empty. `/posts/` is always built, but `astro.config.mjs` drops it from the sitemap until a non-draft post file exists (it reads the files directly, so keep `draft: true` on its own frontmatter line).
+- Layouts: `Base.astro` (head, meta tags, header, footer, optional GoatCounter script), `Article.astro` (reading layout for projects and posts), `Legal.astro` (imprint, privacy).
+- The landing hook (`src/components/Hook.astro`) is the only client JS. It splits the line into per-character spans, sets a `--p` intensity (0 to 1) on each, and CSS maps that to font weight and amber colour. It locks line breaks at the heaviest weight so nothing re-wraps, and does nothing under `prefers-reduced-motion`.
+- Colour and spacing tokens live in `src/styles/global.css` and must match DESIGN.md. Code blocks are not syntax-highlighted on purpose (it would add colours).
+- Settings that are not facts about Leonard (domain, GoatCounter code) live in `src/config.ts`. Analytics stay off while the GoatCounter code is empty.
+- `site` in `astro.config.mjs` must stay the production URL, because the sitemap, RSS and canonical links are built from it.
+- Deploy: `.github/workflows/deploy.yml` builds and publishes to GitHub Pages on every push to `main`. `public/CNAME` sets the custom domain.
 - Claude Code config lives in `.claude/`: `settings.json` wires `hooks/protect.sh` (blocks edits under `src/content/`, and under `tests/` while `.claude/tests.lock` exists) and `hooks/run-checks.sh` (on stop, runs `npm run check` while `.claude/tests.lock` exists).
