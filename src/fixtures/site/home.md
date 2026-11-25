@@ -1,5 +1,5 @@
 ---
-name: Sample Name
+name: Test
 hook: Sample hook line, set large enough to wrap.
 description: Sample site description for layout checks.
 links:

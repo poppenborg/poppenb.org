@@ -23,6 +23,7 @@ Leonard's personal website (poppenb.org): a static site built with Astro 7, Type
 - `src/content/` is read-only for you (enforced by `.claude/hooks/protect.sh`). Suggest wording changes in chat.
 - Follow DESIGN.md for colours, fonts and spacing. Ask before adding new ones.
 - Must work at 375 px wide.
+- All pages must be set up in way that they are not indexed by search engines
 
 SPEC.md is the approved scope for v1, including what is out of scope and the "done when" checklist.
 
