@@ -8,7 +8,7 @@ const { id, href, linkLabel } = Astro.props;
 ---
 
 <div class="head">
-  <h2 class="label" id={id}><slot /></h2>
+  <h2 id={id}><slot /></h2>
   {href && <a class="label" href={href}>{linkLabel} →</a>}
 </div>
 
@@ -22,6 +22,8 @@ const { id, href, linkLabel } = Astro.props;
   }
   h2 {
     margin: 0;
+    font-size: 1.6rem;
+    line-height: 1.1;
   }
   a {
     text-decoration: none;

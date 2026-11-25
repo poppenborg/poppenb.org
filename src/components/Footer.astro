@@ -22,7 +22,7 @@ const legal = [
 <footer class="site-footer wrap">
   <div class="rows">
     <nav aria-label="Footer">
-      <ul>{nav.map((l) => <li><a class="label" href={l.href}>{l.label}</a></li>)}</ul>
+      <ul class="nav">{nav.map((l) => <li><a class="display" href={l.href}>{l.label}</a></li>)}</ul>
     </nav>
     <div aria-label="Elsewhere" role="group">
       {
@@ -43,7 +43,7 @@ const legal = [
     </div>
     <ul class="legal">{legal.map((l) => <li><a class="label" href={l.href}>{l.label}</a></li>)}</ul>
   </div>
-  <p class="label colophon">{siteName} · Set in Literata</p>
+  <p class="label colophon">{siteName} · Set in Literata and VT323</p>
 </footer>
 
 <style>
@@ -67,6 +67,11 @@ const legal = [
   }
   a {
     text-decoration: none;
+  }
+  .nav a {
+    font-size: 1.35rem;
+    line-height: 1;
+    color: var(--muted);
   }
   a:hover {
     color: var(--text);

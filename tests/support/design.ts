@@ -37,7 +37,7 @@ export function designTests() {
       expect(readFileSync(`${dir}/${f}`, 'utf8'), f).not.toMatch(/prefers-color-scheme\s*:\s*light/);
   });
 
-  test('Literata is the only font on every page (code may use system monospace)', async ({ browser }, info) => {
+  test('VT323 for headings and navigation, Literata for everything else (code may use system monospace)', async ({ browser }, info) => {
     const page = await browser.newPage({ baseURL: info.project.use.baseURL, reducedMotion: 'reduce' });
     const problems: string[] = [];
     for (const path of builtPages(buildOf(info))) {
@@ -50,10 +50,13 @@ export function designTests() {
           const first = getComputedStyle(el).fontFamily.split(',')[0].trim().replace(/["']/g, '');
           // Code uses the system monospace stack (approved by Leonard, 2026-11-25).
           if (el.closest('code, pre, kbd, samp') && /monospace$/.test(getComputedStyle(el).fontFamily)) continue;
-          if (first !== 'Literata Variable') out.add(`${el.tagName.toLowerCase()}${el.className ? '.' + el.className : ''}: ${first}`);
+          // VT323 for headings (except the landing hook) and navigation (approved by Leonard, 2026-11-25).
+          const display = !!el.closest('h1:not(.hook), h2, h3, header nav, footer nav, header > a[href="/"]') && !el.closest('.todo');
+          const want = display ? 'VT323' : 'Literata Variable';
+          if (first !== want) out.add(`${el.tagName.toLowerCase()}${el.className ? '.' + el.className : ''}: ${first} (expected ${want})`);
         }
         const faces = [...document.fonts].filter((f) => f.status === 'loaded').map((f) => f.family.replace(/["']/g, ''));
-        for (const f of new Set(faces)) if (f !== 'Literata Variable') out.add(`loaded font face: ${f}`);
+        for (const f of new Set(faces)) if (f !== 'Literata Variable' && f !== 'VT323') out.add(`loaded font face: ${f}`);
         return [...out];
       });
       problems.push(...found.map((f) => `${path}: ${f}`));

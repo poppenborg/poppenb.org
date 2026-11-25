@@ -24,6 +24,7 @@ test('no client framework', () => {
 
 test('fonts are self-hosted via Fontsource, with no Google Fonts', () => {
   expect(deps['@fontsource-variable/literata']).toBeTruthy();
+  expect(deps['@fontsource/vt323']).toBeTruthy();
   const css = readFileSync('src/styles/global.css', 'utf8');
   expect(css).not.toMatch(/fonts\.googleapis|fonts\.gstatic/);
 });

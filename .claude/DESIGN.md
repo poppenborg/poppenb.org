@@ -11,7 +11,10 @@ The list above describes the reference site. Where it conflicts with SPEC.md (fo
 
 ## Tokens (approved 2026-11-25)
 
-**Font:** Literata, variable (`wght` and `opsz` axes), self-hosted. It is the only font, except that code uses the system monospace stack (approved by Leonard 2026-11-25; no web font is loaded for it). Labels are small, uppercase, letter-spaced Literata.
+**Fonts** (both self-hosted):
+- **VT323** (`--font-display`, approved by Leonard 2026-11-25): headings (h1, h2, h3, section headings) and navigation (site name, header nav, footer nav). It has a single weight (400), so it is never bolded, and it is set in sentence case without tracking, roughly 1.3x the size Literata would use.
+- **Literata**, variable (`wght` and `opsz` axes; `--font`): body text, the landing hook (which needs the variable axes), list titles and labels. Labels are small, uppercase, letter-spaced Literata.
+- Code uses the system monospace stack (approved by Leonard 2026-11-25; no web font is loaded for it).
 
 **Theme:** dark only (`color-scheme: dark`). No light mode, no toggle.
 
