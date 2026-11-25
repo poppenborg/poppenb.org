@@ -1,0 +1,60 @@
+---
+/** Reading layout shared by project pages and posts. */
+import Base from './Base.astro';
+import End from '../components/End.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  back: { href: string; label: string };
+}
+const { title, description, image, back } = Astro.props;
+---
+
+<Base title={title} description={description} image={image} type="article">
+  <article class="wrap">
+    <header class="article-head">
+      <a class="label back" href={back.href}>◂ {back.label}</a>
+      <h1>{title}</h1>
+      {description && <p class="dek">{description}</p>}
+      <slot name="meta" />
+    </header>
+    <slot name="cover" />
+    <div class="prose body">
+      <slot />
+    </div>
+    <End />
+    <slot name="after" />
+  </article>
+</Base>
+
+<style>
+  .article-head {
+    padding-top: var(--space-5);
+  }
+  .back {
+    text-decoration: none;
+  }
+  .back:hover {
+    color: var(--accent);
+  }
+  h1 {
+    margin: var(--space-3) 0 0;
+    font-size: clamp(2.1rem, 1.5rem + 3vw, 3.25rem);
+    line-height: 1.08;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  .dek {
+    margin: var(--space-2) 0 0;
+    font-size: 1.15em;
+    font-style: italic;
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+  .body {
+    margin-top: var(--space-4);
+  }
+</style>

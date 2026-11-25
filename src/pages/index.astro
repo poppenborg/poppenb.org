@@ -1,0 +1,56 @@
+---
+import { render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Hook from '../components/Hook.astro';
+import ProjectList from '../components/ProjectList.astro';
+import PostList from '../components/PostList.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import Todo from '../components/Todo.astro';
+import { getPosts, getProjects, getSiteText } from '../lib/content';
+
+const home = await getSiteText('home');
+const Intro = home?.body?.trim() ? (await render(home)).Content : undefined;
+const projects = (await getProjects()).slice(0, 3);
+const posts = (await getPosts()).slice(0, 3);
+---
+
+<Base>
+  <div class="wrap">
+    <section class="hero">
+      {home?.data.hook ? <Hook text={home.data.hook} /> : <h1><Todo what="hook line (hook in src/content/site/home.md)" /></h1>}
+      <div class="intro prose">
+        {Intro ? <Intro /> : <Todo block what="short intro (body of src/content/site/home.md)" />}
+      </div>
+    </section>
+
+    <section class="block" aria-labelledby="latest-projects">
+      <SectionHeading id="latest-projects" href="/projects/" linkLabel="All projects">Latest projects</SectionHeading>
+      {projects.length > 0 ? <ProjectList projects={projects} /> : <Todo block what="projects (Markdown files in src/content/projects/)" />}
+    </section>
+
+    {
+      posts.length > 0 && (
+        <section class="block" aria-labelledby="latest-posts">
+          <SectionHeading id="latest-posts" href="/posts/" linkLabel="All posts">
+            Latest posts
+          </SectionHeading>
+          <PostList posts={posts} />
+        </section>
+      )
+    }
+  </div>
+</Base>
+
+<style>
+  .hero {
+    padding-block: clamp(3rem, 12vh, 8rem) var(--space-5);
+  }
+  .intro {
+    margin-top: var(--space-4);
+    max-width: 34rem;
+    font-size: 1.08em;
+  }
+  .block + .block {
+    margin-top: var(--space-5);
+  }
+</style>

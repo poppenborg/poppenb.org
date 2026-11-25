@@ -1,0 +1,43 @@
+---
+/** Imprint and privacy: text comes only from src/content/site/<id>.md. */
+import { render } from 'astro:content';
+import Base from './Base.astro';
+import Todo from '../components/Todo.astro';
+import { getSiteText } from '../lib/content';
+
+interface Props {
+  id: 'imprint' | 'privacy';
+  title: string;
+}
+const { id, title } = Astro.props;
+const entry = await getSiteText(id);
+const Content = entry?.body?.trim() ? (await render(entry)).Content : undefined;
+---
+
+<Base title={title}>
+  <article class="wrap">
+    <header class="page-head">
+      <p class="label">Legal</p>
+      <h1>{title}</h1>
+    </header>
+    <div class="prose">
+      {Content ? <Content /> : <Todo block what={`${title.toLowerCase()} text (src/content/site/${id}.md)`} />}
+    </div>
+  </article>
+</Base>
+
+<style>
+  .page-head {
+    padding-block: var(--space-5) var(--space-3);
+  }
+  .page-head p {
+    margin: 0;
+  }
+  h1 {
+    margin: 0.3rem 0 0;
+    font-size: clamp(2.2rem, 1.6rem + 3vw, 3.2rem);
+    line-height: 1.1;
+    font-weight: 560;
+    letter-spacing: -0.015em;
+  }
+</style>

@@ -1,0 +1,62 @@
+---
+interface Props {
+  siteName: string;
+  hasPosts: boolean;
+}
+const { siteName, hasPosts } = Astro.props;
+const path = Astro.url.pathname;
+const nav = [{ href: '/projects/', label: 'Projects' }, ...(hasPosts ? [{ href: '/posts/', label: 'Posts' }] : [])];
+---
+
+<header class="site-header wrap">
+  <a class="name" href="/" aria-current={path === '/' ? 'page' : undefined}>{siteName}</a>
+  <nav aria-label="Main">
+    <ul>
+      {
+        nav.map((item) => (
+          <li>
+            <a class="label" href={item.href} aria-current={path.startsWith(item.href) ? 'page' : undefined}>
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>
+
+<style>
+  .site-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding-block: var(--space-3) var(--space-2);
+  }
+  .name {
+    font-weight: 640;
+    font-size: 1.05rem;
+    letter-spacing: -0.005em;
+    text-decoration: none;
+  }
+  ul {
+    display: flex;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  nav a {
+    text-decoration: none;
+    color: var(--muted);
+  }
+  nav a:hover,
+  nav a[aria-current='page'] {
+    color: var(--text);
+  }
+  nav a[aria-current='page'] {
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-underline-offset: 0.45em;
+  }
+</style>

@@ -1,0 +1,61 @@
+---
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import Article from '../../layouts/Article.astro';
+import MetaBlock from '../../components/MetaBlock.astro';
+import ProjectList from '../../components/ProjectList.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import Todo from '../../components/Todo.astro';
+import { getProjects, type Project } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((project) => ({ params: { id: project.id }, props: { project, projects } }));
+}
+
+const { project, projects } = Astro.props as { project: Project; projects: Project[] };
+const { data } = project;
+const { Content } = await render(project);
+const hasBody = !!project.body?.trim();
+const more = projects.filter((p) => p.id !== project.id).slice(0, 3);
+
+const meta = [
+  { label: 'Year', value: String(data.year) },
+  ...(data.status ? [{ label: 'Status', value: data.status }] : []),
+  ...(data.stack.length ? [{ label: 'Stack', value: data.stack.join(', ') }] : []),
+  ...(data.links.code ? [{ label: 'Code', value: new URL(data.links.code).hostname, href: data.links.code }] : []),
+  ...(data.links.demo ? [{ label: 'Demo', value: new URL(data.links.demo).hostname, href: data.links.demo }] : []),
+];
+---
+
+<Article title={data.title} description={data.summary} image={data.cover?.src} back={{ href: '/projects/', label: 'Projects' }}>
+  <MetaBlock slot="meta" items={meta} />
+  {
+    data.cover && (
+      <figure slot="cover" class="cover">
+        <Image src={data.cover} alt={data.coverAlt ?? ''} widths={[640, 1280]} sizes="(max-width: 42rem) 100vw, 38rem" />
+      </figure>
+    )
+  }
+  {hasBody ? <Content /> : <Todo block what={`the story of this project (body of ${project.filePath})`} />}
+  {
+    more.length > 0 && (
+      <section slot="after" aria-labelledby="more-projects">
+        <SectionHeading id="more-projects" href="/projects/" linkLabel="All projects">
+          More projects
+        </SectionHeading>
+        <ProjectList projects={more} />
+      </section>
+    )
+  }
+</Article>
+
+<style>
+  .cover {
+    margin: var(--space-4) 0 0;
+  }
+  .cover :global(img) {
+    width: 100%;
+    border-radius: 3px;
+  }
+</style>

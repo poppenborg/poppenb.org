@@ -1,0 +1,32 @@
+---
+interface Props {
+  id?: string;
+  href?: string;
+  linkLabel?: string;
+}
+const { id, href, linkLabel } = Astro.props;
+---
+
+<div class="head">
+  <h2 class="label" id={id}><slot /></h2>
+  {href && <a class="label" href={href}>{linkLabel} →</a>}
+</div>
+
+<style>
+  .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-2);
+    margin: 0 0 var(--space-2);
+  }
+  h2 {
+    margin: 0;
+  }
+  a {
+    text-decoration: none;
+  }
+  a:hover {
+    color: var(--accent);
+  }
+</style>

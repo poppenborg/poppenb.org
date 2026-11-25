@@ -1,0 +1,38 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostList from '../../components/PostList.astro';
+import { getPosts } from '../../lib/content';
+
+// This page is always built, but nothing links here and the sitemap skips it
+// until a post is published (see astro.config.mjs).
+const posts = await getPosts();
+---
+
+<Base title="Posts" description="Posts, newest first." noindex={posts.length === 0}>
+  <div class="wrap">
+    <header class="page-head">
+      <p class="label">Index</p>
+      <h1>Posts</h1>
+    </header>
+    {posts.length > 0 ? <PostList posts={posts} /> : <p class="empty">Nothing here yet.</p>}
+  </div>
+</Base>
+
+<style>
+  .page-head {
+    padding-block: var(--space-5) var(--space-3);
+  }
+  .page-head p {
+    margin: 0;
+  }
+  h1 {
+    margin: 0.3rem 0 0;
+    font-size: clamp(2.2rem, 1.6rem + 3vw, 3.2rem);
+    line-height: 1.1;
+    font-weight: 560;
+    letter-spacing: -0.015em;
+  }
+  .empty {
+    color: var(--muted);
+  }
+</style>

@@ -1,0 +1,79 @@
+---
+import Todo from './Todo.astro';
+
+interface Props {
+  siteName: string;
+  hasPosts: boolean;
+  links: { label: string; url: string }[];
+}
+const { siteName, hasPosts, links } = Astro.props;
+const nav = [
+  { href: '/', label: 'Home' },
+  { href: '/projects/', label: 'Projects' },
+  ...(hasPosts ? [{ href: '/posts/', label: 'Posts' }] : []),
+  { href: '/rss.xml', label: 'RSS' },
+];
+const legal = [
+  { href: '/imprint/', label: 'Imprint' },
+  { href: '/privacy/', label: 'Privacy' },
+];
+---
+
+<footer class="site-footer wrap">
+  <div class="rows">
+    <nav aria-label="Footer">
+      <ul>{nav.map((l) => <li><a class="label" href={l.href}>{l.label}</a></li>)}</ul>
+    </nav>
+    <div aria-label="Elsewhere" role="group">
+      {
+        links.length > 0 ? (
+          <ul>
+            {links.map((l) => (
+              <li>
+                <a class="label" href={l.url} rel="me">
+                  {l.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <Todo what="contact and social links (links in src/content/site/home.md)" />
+        )
+      }
+    </div>
+    <ul class="legal">{legal.map((l) => <li><a class="label" href={l.href}>{l.label}</a></li>)}</ul>
+  </div>
+  <p class="label colophon">{siteName} · Set in Literata</p>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: var(--space-6);
+    padding-bottom: var(--space-4);
+  }
+  .rows {
+    display: grid;
+    gap: var(--space-2);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--rule);
+  }
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  a {
+    text-decoration: none;
+  }
+  a:hover {
+    color: var(--text);
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+  }
+  .colophon {
+    margin: var(--space-4) 0 0;
+  }
+</style>
