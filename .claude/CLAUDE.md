@@ -4,14 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Leonard's personal website (poppenb.org): a static site built with Astro 7, TypeScript (strict), and Node 22. There is no test suite; `npm run check` (Astro's type and template checker) plus a clean `npm run build` are the verification steps.
+Leonard's personal website (poppenb.org): a static site built with Astro 7, TypeScript (strict), and Node 22. `npm run check` is the verification step: Astro's type and template checker, a build, then the Playwright suite in `tests/` (one test per SPEC.md requirement).
 
 ## Commands
 
 - `npm run dev`: dev server on http://localhost:4321 (draft posts are visible here).
 - `npm run build`: static build into `dist/` (drafts excluded). Also writes `sitemap-index.xml` once pages exist.
 - `npm run preview`: serve the built `dist/`.
-- `npm run check`: type-check `.ts` and `.astro` files.
+- `npm run check`: `astro check`, `astro build`, then `playwright test`.
+- `npm test`: only the Playwright tests. `scripts/test-server.mjs` builds and serves two previews: real content on :4330 (project `site`) and real content plus `src/fixtures/` on :4331 (project `fixtures`, files named `*.fixtures.spec.ts`). Build logs go to `test-logs/`. `LIVE=1` adds a check of https://poppenb.org.
 - `npm run shots`: build, then screenshot every page at 375 px and 1280 px into `shots/`. Fails if a page scrolls sideways. The build log lists every `[TODO]`.
 - `npm run shots:fixtures`: the same, with the sample entries in `src/fixtures/` added, so every layout (project, post, footer links) can be checked before real content exists.
 
