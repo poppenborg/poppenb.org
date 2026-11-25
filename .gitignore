@@ -6,3 +6,7 @@ dist/
 .DS_Store
 .idea/
 shots/
+dist-fixtures/
+test-logs/
+test-results/
+playwright-report/
