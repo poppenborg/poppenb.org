@@ -1,8 +1,8 @@
 #!/bin/bash
 FILE=$(jq -r '.tool_input.file_path // empty')
 case "$FILE" in
-  "$CLAUDE_PROJECT_DIR"/content/*)
-    echo "content/ belongs to the owner. Suggest wording in chat instead." >&2
+  "$CLAUDE_PROJECT_DIR"/src/content/*)
+    echo "src/content/ belongs to the owner. Suggest wording in chat instead." >&2
     exit 2 ;;
   "$CLAUDE_PROJECT_DIR"/tests/*)
     if [ -f "$CLAUDE_PROJECT_DIR/.claude/tests.lock" ]; then

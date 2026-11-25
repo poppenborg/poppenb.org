@@ -7,4 +7,22 @@
 - Its distinctive touch is a print-ephemera, "typeset" aesthetic: tracked uppercase micro-labels, and a subscribe box styled as a postcard ("Reply card", "No stamp needed"). Offer RSS as an alternative to email.
 - The footer repeats the nav.
 
-Exact fonts, colors, and dark-mode behaviour of the reference were not captured. Decide them deliberately for this site and record the chosen design tokens here once they exist.
+The list above describes the reference site. Where it conflicts with SPEC.md (for example the subscribe card or the About/Work nav), SPEC.md wins.
+
+## Tokens (approved 2026-11-25)
+
+**Font:** Literata, variable (`wght` and `opsz` axes), self-hosted. It is the only font. Labels are small, uppercase, letter-spaced Literata.
+
+**Theme:** dark only (`color-scheme: dark`). No light mode, no toggle.
+
+| Token | Hex | Use | Contrast on `--bg` |
+| --- | --- | --- | --- |
+| `--bg` | `#14130F` | page background (warm near-black) | |
+| `--surface` | `#1C1A16` | cards, code blocks | |
+| `--text` | `#ECE6D9` | body text (warm paper) | 14.9:1 |
+| `--muted` | `#A8A091` | metadata, labels | 7.2:1 |
+| `--faint` | `#7A7366` | decorative only, never text | 4.0:1 |
+| `--rule` | `#34302A` | hairlines, borders | |
+| `--accent` | `#E8A25A` | links, focus ring, hook highlight (amber) | 8.6:1 |
+
+**Layout:** one reading column of about 66 characters, works from 375 px wide.

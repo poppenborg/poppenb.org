@@ -15,12 +15,15 @@ Leonard's personal website (poppenb.org): a static site built with Astro 7, Type
 
 ## Rules
 
-- Every fact about me comes from `content/` and `public/`. Never invent or embellish.
+- Every fact about me comes from `src/content/` and `public/`. Never invent or embellish.
   If something is missing, render a visible "TODO" and tell me.
-- `content/` is read-only for you (enforced by `.claude/hooks/protect.sh`). Suggest wording changes in chat.
+- `src/content/` is read-only for you (enforced by `.claude/hooks/protect.sh`). Suggest wording changes in chat.
 - Follow DESIGN.md for colours, fonts and spacing. Ask before adding new ones.
 - Must work at 375 px wide.
 
+SPEC.md is the approved scope for v1, including what is out of scope and the "done when" checklist.
+
+@SPEC.md
 @DESIGN.md
 @REFERENCES.md
 
@@ -32,8 +35,8 @@ Leonard's personal website (poppenb.org): a static site built with Astro 7, Type
 
 ## Architecture
 
-- Posts are Markdown in `content/posts/`, loaded as the `posts` content collection defined in `src/content.config.ts`. The frontmatter schema there (`title`, `description`, `pubDate`, `topics`, `draft`) is the single source of truth; add fields there first.
+- Posts are Markdown in `src/content/posts/` (projects will be in `src/content/projects/`), loaded as the `posts` content collection defined in `src/content.config.ts`. The frontmatter schema there (`title`, `description`, `pubDate`, `topics`, `draft`) is the single source of truth; add fields there first.
 - Always read posts through `getPosts()` in `src/posts.ts`, never `getCollection` directly. It applies the draft filter and newest-first sort.
 - `site` in `astro.config.mjs` must stay the production URL, because the sitemap (and any RSS feed) builds links from it.
 - There are no pages yet (`src/pages/` is empty). The first design draft should introduce a shared layout in `src/layouts/` for the `<head>` markup.
-- Claude Code config lives in `.claude/`: `settings.json` wires `hooks/protect.sh` (blocks edits under `content/`, and under `tests/` while `.claude/tests.lock` exists) and `hooks/run-checks.sh` (on stop, runs `npm run check` while `.claude/tests.lock` exists).
+- Claude Code config lives in `.claude/`: `settings.json` wires `hooks/protect.sh` (blocks edits under `src/content/`, and under `tests/` while `.claude/tests.lock` exists) and `hooks/run-checks.sh` (on stop, runs `npm run check` while `.claude/tests.lock` exists).

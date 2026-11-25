@@ -1,6 +1,6 @@
 # poppenb.org: site spec (v1)
 
-Status: draft for Leonard's review, 2026-11-25. Nothing is built until Leonard approves it.
+Status: approved by Leonard, 2026-11-25.
 
 ## Purpose
 
@@ -29,7 +29,7 @@ A personal site for a professional audience, mainly other engineers. It shows Le
 The nav is the site name (links home), then Projects, plus Posts once a post is published. The footer repeats the nav and adds Imprint, Privacy, RSS and Leonard's social and email links.
 
 ### Landing page
-1. **Visual hook: one subtle interactive element.** Proposal: a large typographic line set in Literata. Literata is a variable font, so the line's weight and optical size respond gently to the pointer on desktop and to scroll on touch screens. It sits still under `prefers-reduced-motion`. No canvas and no animation library; it must not make the page slower to show content. The line's text comes from content.
+1. **Visual hook: one subtle interactive element.** A large typographic line set in Literata. Literata is a variable font, so the line's weight and optical size respond gently to the pointer on desktop and to scroll on touch screens. It sits still under `prefers-reduced-motion`. No canvas and no animation library; it must not make the page slower to show content. The line's text comes from content.
 2. A short intro of two or three sentences, from content.
 3. The latest three projects: title, one-line summary, year, and status.
 4. The latest posts appear only when at least one is published.
@@ -58,26 +58,14 @@ Any missing fact renders as a visible `TODO` and is reported. Claude never write
 
 - **Font:** Literata (variable, self-hosted via Fontsource, no Google Fonts request, so nothing in the privacy policy). Used for everything. Labels use tracked uppercase small sizes of the same family. Adding a second font needs Leonard's OK.
 - **Theme: dark only.** No light mode and no toggle. `color-scheme: dark`.
-- **Proposed colour tokens** (contrast against the background in brackets):
-
-| Token | Hex | Use |
-| --- | --- | --- |
-| `--bg` | `#14130F` | page background, a warm near-black |
-| `--surface` | `#1C1A16` | cards, code blocks |
-| `--text` | `#ECE6D9` | body text, warm paper (14.9:1) |
-| `--muted` | `#A8A091` | metadata, labels (7.2:1) |
-| `--faint` | `#7A7366` | decorative only, never body text (4.0:1) |
-| `--rule` | `#34302A` | hairlines and borders |
-| `--accent` | `#E8A25A` | links, focus ring and the hook's highlight, a lamplight amber (8.6:1) |
-
+- **Colour tokens:** defined in DESIGN.md.
 - **Layout:** a single reading column of about 66 characters, generous line height, and works from 375 px wide upwards.
-- Once approved, these tokens move into DESIGN.md as the source of truth.
 
 ## Technical
 
 - Astro 7 static build, TypeScript strict. No client framework. A small amount of plain JS only for the hook.
-- **Hosting (recommendation):** GitHub Pages, deployed by a GitHub Actions workflow on push to `main`, with poppenb.org as a custom domain over HTTPS. It's free, the code is already on GitHub, and there are no extra accounts. The alternative is Cloudflare Pages, which is faster worldwide but needs a Cloudflare account and DNS changes.
-- **Analytics (recommendation):** GoatCounter (free for personal use, cookieless, no consent banner needed). Plausible (EU-hosted, paid) is the alternative. It must be disclosed on the privacy page.
+- **Hosting:** GitHub Pages, deployed by a GitHub Actions workflow on push to `main`, with poppenb.org as a custom domain over HTTPS.
+- **Analytics:** GoatCounter (cookieless, no consent banner). It must be disclosed on the privacy page.
 - RSS at `/rss.xml` (posts and projects) and a sitemap.
 - Each page has a title, description and Open Graph tags. The cover image is used for social cards when present.
 - `npm run shots`: Playwright screenshots of every page at 375 px and 1280 px, saved to `shots/` (git-ignored).
@@ -104,10 +92,3 @@ Any missing fact renders as a visible `TODO` and is reported. Claude never write
 - [ ] No request leaves poppenb.org except the analytics script (fonts are self-hosted).
 - [ ] Lighthouse on the landing page scores at least 95 for performance and 100 for accessibility.
 - [ ] The site deploys from `main` to https://poppenb.org.
-
-## Open questions
-
-1. Is the variable-font hook what you meant by an interactive element? If you had another idea, describe it.
-2. Is the amber accent right, or would you like a different colour?
-3. GitHub Pages and GoatCounter: are those OK?
-4. There's no `main` branch yet. Should this branch become `main` once the spec is approved?
