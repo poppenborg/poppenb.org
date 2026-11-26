@@ -30,6 +30,7 @@ The nav is the site name (links home), then Projects, plus Posts once a post is 
 
 ### Landing page
 1. **Visual hook: one subtle interactive element.** A large typographic line set in Literata. Literata is a variable font, so the line's weight and optical size respond gently to the pointer on desktop and to scroll on touch screens. It sits still under `prefers-reduced-motion`. No canvas and no animation library; it must not make the page slower to show content. The line's text comes from content.
+   - **Background illustration** (requested by Leonard, 2026-11-26): Leonard's square corner-grid illustration (`src/assets/hook-grid.svg`, inlined) sits behind the hook, decorative and hidden from screen readers. Its tiles rest in `--rule` and warm towards amber (at most 25%) as the letters near them swell, so it moves with the hook and stays still under `prefers-reduced-motion`. No caption.
 2. A short intro of two or three sentences, from content.
 3. The latest three projects: title, one-line summary, year, and status.
 4. The latest posts appear only when at least one is published.
@@ -70,7 +71,7 @@ Any missing fact renders as a visible `TODO` and is reported. Claude never write
 - **Hosting:** GitHub Pages, deployed by a GitHub Actions workflow on push to `main`, with poppenb.org as a custom domain over HTTPS.
 - **Analytics:** GoatCounter (cookieless, no consent banner). It must be disclosed on the privacy page.
 - RSS at `/rss.xml` (posts and projects) and a sitemap.
-- Each page has a title, description and Open Graph tags. The cover image is used for social cards when present.
+- Each page has a title, description and Open Graph tags. The cover image is used for social cards when present; otherwise the card is `public/og.png`, the landing illustration rendered by `scripts/og-image.mjs` (requested by Leonard, 2026-11-26).
 - `npm run shots`: Playwright screenshots of every page at 375 px and 1280 px, saved to `shots/` (git-ignored).
 
 ## Out of scope for v1

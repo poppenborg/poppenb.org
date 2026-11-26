@@ -28,4 +28,6 @@ The list above describes the reference site. Where it conflicts with SPEC.md (fo
 | `--rule` | `#34302A` | hairlines, borders | |
 | `--accent` | `#E8A25A` | links, focus ring, hook highlight (amber) | 8.6:1 |
 
+**Landing illustration** (requested by Leonard 2026-11-26): the corner-grid tiles behind the hook use `--rule`, mixed with up to 25% `--accent` while the hook swells (no new colour token). Square, right-aligned in the column, `min(100%, 27rem)` wide, top-aligned with the hero. No caption, no frame.
+
 **Layout:** one reading column of about 66 characters, works from 375 px wide.
