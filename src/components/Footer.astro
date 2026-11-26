@@ -1,5 +1,6 @@
 ---
 import Todo from './Todo.astro';
+import { externalAttrs } from '../lib/external-links.mjs';
 
 interface Props {
   siteName: string;
@@ -11,8 +12,12 @@ const nav = [
   { href: '/', label: 'Home' },
   { href: '/projects/', label: 'Projects' },
   ...(hasPosts ? [{ href: '/posts/', label: 'Posts' }] : []),
-  { href: '/rss.xml', label: 'RSS' },
 ];
+/** rel="me" plus, for external links, the new-tab attributes. */
+const withRel = (url: string, rel: string) => {
+  const ext: { target?: string; rel?: string } = externalAttrs(url);
+  return { ...ext, rel: [rel, ext.rel].filter(Boolean).join(' ') };
+};
 const legal = [
   { href: '/imprint/', label: 'Imprint' },
   { href: '/privacy/', label: 'Privacy' },
@@ -30,7 +35,7 @@ const legal = [
           <ul>
             {links.map((l) => (
               <li>
-                <a class="label" href={l.url} rel="me">
+                <a class="label" href={l.url} {...withRel(l.url, 'me')}>
                   {l.label}
                 </a>
               </li>
