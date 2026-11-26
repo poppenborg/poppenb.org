@@ -5,6 +5,8 @@
  * scrolling (touch). At rest each letter uses the optical size that matches
  * the line's font size; swelling lowers it towards a sturdier text cut.
  * Lines are locked at their widest so the text never re-wraps while it moves.
+ * The illustration behind it (index.astro, [data-hook-art]) follows along:
+ * each tile warms by the intensity of the letters nearest to it.
  * With prefers-reduced-motion it stays still.
  */
 interface Props {
@@ -82,6 +84,7 @@ const words = text.split(/\s+/).filter(Boolean);
   if (hook && lines && !reduce.matches) {
     const chars = [...lines.querySelectorAll<HTMLElement>('.c')];
     const words = [...lines.querySelectorAll<HTMLElement>('.w')];
+    const tiles = [...document.querySelectorAll<SVGElement>('[data-hook-art] path')];
     const touch = window.matchMedia('(hover: none)').matches;
 
     // Lock line breaks at the heaviest weight, so swelling never re-wraps.
@@ -125,6 +128,17 @@ const words = text.split(/\s+/).filter(Boolean);
         } else current[i] = target[i];
         chars[i].style.setProperty('--p', current[i].toFixed(3));
       }
+      // Tiles glow with the letters around them, fading over a few letter heights.
+      for (let t = 0; t < tiles.length; t++) {
+        let p = 0;
+        for (let i = 0; i < chars.length; i++) {
+          if (current[i] < 0.01) continue;
+          const dx = tileCentres[t][0] - centres[i][0];
+          const dy = tileCentres[t][1] - centres[i][1];
+          p = Math.max(p, current[i] * Math.exp(-(dx * dx + dy * dy) / (2 * reach * reach)));
+        }
+        tiles[t].style.setProperty('--p', p.toFixed(3));
+      }
       frame = moving ? requestAnimationFrame(tick) : 0;
     };
     const kick = () => {
@@ -142,11 +156,16 @@ const words = text.split(/\s+/).filter(Boolean);
 
     // Desktop: swell around the pointer, measured in px from each char's centre.
     let centres: [number, number][] = [];
+    let tileCentres: [number, number][] = [];
+    let reach = 1;
+    const centre = (el: Element): [number, number] => {
+      const r = el.getBoundingClientRect();
+      return [r.left + r.width / 2 + scrollX, r.top + r.height / 2 + scrollY];
+    };
     const measure = () => {
-      centres = chars.map((c) => {
-        const r = c.getBoundingClientRect();
-        return [r.left + r.width / 2 + scrollX, r.top + r.height / 2 + scrollY];
-      });
+      centres = chars.map(centre);
+      tileCentres = tiles.map(centre);
+      reach = parseFloat(getComputedStyle(hook).fontSize) * 1.6;
     };
     const onPointer = (e: PointerEvent) => {
       if (e.pointerType !== 'mouse') return;
