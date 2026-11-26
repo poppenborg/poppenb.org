@@ -1,5 +1,6 @@
 ---
 import type { Project } from '../lib/content';
+import Todo from './Todo.astro';
 
 interface Props {
   projects: Project[];
@@ -16,10 +17,11 @@ const { projects } = Astro.props;
           <a class="title" href={`/projects/${p.id}/`}>
             {p.data.title}
           </a>
-          {p.data.summary && <p class="summary">{p.data.summary}</p>}
-          {(p.data.status || p.data.stack.length > 0) && (
-            <p class="label meta">{[p.data.status, p.data.stack.join(', ')].filter(Boolean).join(' · ')}</p>
-          )}
+          <p class="summary">{p.data.summary ?? <Todo what={`summary of ${p.id}`} />}</p>
+          <p class="label meta">
+            {p.data.status ?? <Todo what={`status of ${p.id}`} />}
+            {p.data.stack.length > 0 && ` · ${p.data.stack.join(', ')}`}
+          </p>
         </div>
       </li>
     ))
