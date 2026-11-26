@@ -15,7 +15,8 @@ async function hookState(page: Page) {
     return leaves.map((el) => {
       const s = getComputedStyle(el);
       const opsz = s.fontVariationSettings.match(/"opsz"\s+([\d.]+)/)?.[1];
-      return { weight: Number(s.fontWeight), opsz: opsz ? Number(opsz) : null, color: s.color };
+      const family = s.fontFamily.split(',')[0].trim().replace(/["']/g, '');
+      return { weight: Number(s.fontWeight), opsz: opsz ? Number(opsz) : null, color: s.color, family };
     });
   });
 }
@@ -71,6 +72,25 @@ export function landingTests() {
       expect(spread(opsz as number[]), 'optical size should vary around the pointer').toBeGreaterThan(0);
     });
 
+    test('desktop: letters near the pointer swap to VT323, and swap back', async ({ page }, info) => {
+      expect(siteText('home', buildOf(info))?.data.hook, 'hook in src/content/site/home.md').toBeTruthy();
+      await open(page, '/');
+      await page.mouse.move(2, 2);
+      await page.waitForTimeout(2500); // let the arrival sweep finish
+      const rest = await hookState(page);
+      expect(rest.every((c) => c.family === 'Literata Variable'), 'all Literata at rest').toBe(true);
+      const box = (await page.locator('main h1').first().boundingBox())!;
+      await page.mouse.move(box.x + box.width / 3, box.y + box.height / 2, { steps: 8 });
+      await page.waitForTimeout(800);
+      const hover = await hookState(page);
+      const swapped = hover.filter((c) => c.family === 'VT323').length;
+      expect(swapped, 'some letters near the pointer are in VT323').toBeGreaterThan(0);
+      expect(swapped, 'most of the line stays in Literata').toBeLessThan(hover.length / 2);
+      await page.mouse.move(2, 2, { steps: 4 });
+      await page.waitForTimeout(1500);
+      expect((await hookState(page)).every((c) => c.family === 'Literata Variable'), 'back to Literata').toBe(true);
+    });
+
     test('touch: the hook responds to scroll', async ({ browser }, info) => {
       expect(siteText('home', buildOf(info))?.data.hook, 'hook in src/content/site/home.md').toBeTruthy();
       const context = await browser.newContext({
@@ -99,6 +119,7 @@ export function landingTests() {
       const first = await hookState(page);
       expect(first.length).toBeGreaterThan(0);
       expect(spread(first.map((c) => c.weight)), 'no character emphasised on load').toBe(0);
+      expect(first.every((c) => c.family === 'Literata Variable'), 'no letter swapped to VT323').toBe(true);
       const box = (await page.locator('main h1').first().boundingBox())!;
       await page.mouse.move(box.x + box.width / 3, box.y + box.height / 2, { steps: 8 });
       await page.evaluate(() => window.scrollTo(0, 120));
