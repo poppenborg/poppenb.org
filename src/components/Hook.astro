@@ -4,6 +4,9 @@
  * optical size and colour swell around the pointer (desktop) or travel with
  * scrolling (touch). At rest each letter uses the optical size that matches
  * the line's font size; swelling lowers it towards a sturdier text cut.
+ * Letters that swell past a threshold flip into VT323 (the "swap", chosen by
+ * Leonard 2026-11-26). VT323 is sized to Literata's x-height. Lines are locked
+ * at the widest each letter can get in either font, so nothing re-wraps.
  * Lines are locked at their widest so the text never re-wraps while it moves.
  * The illustration behind it (index.astro, [data-hook-art]) follows along:
  * each tile warms by the intensity of the letters nearest to it.
@@ -61,7 +64,19 @@ const words = text.split(/\s+/).filter(Boolean);
     font-variation-settings: 'opsz' calc(var(--opsz-rest) + var(--p) * (var(--opsz-swell) - var(--opsz-rest)));
     color: color-mix(in oklab, var(--accent) calc(var(--p) * 100%), var(--text));
   }
+  /* Swap: VT323 at 1.3em matches Literata's x-height. Every VT323 glyph is
+     0.4em wide, so 0.52em of the line's size. */
+  .c.vt {
+    font-family: var(--font-display);
+    font-size: 1.3em;
+    font-weight: 400;
+    font-synthesis: none;
+    line-height: 0;
+    letter-spacing: 0;
+  }
   .measuring .c {
+    display: inline-block;
+    min-width: 0.52em;
     font-weight: 860;
     font-variation-settings: 'opsz' var(--opsz-swell);
   }
@@ -71,6 +86,8 @@ const words = text.split(/\s+/).filter(Boolean);
   const hook = document.querySelector<HTMLElement>('[data-hook]');
   const lines = hook?.querySelector<HTMLElement>('.lines');
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const SWAP_ON = 0.5;
+  const SWAP_OFF = 0.38;
 
   // Rest at the optical size that matches the rendered size, as
   // font-optical-sizing: auto would (it is overridden once opsz is explicit).
@@ -127,6 +144,11 @@ const words = text.split(/\s+/).filter(Boolean);
           moving = true;
         } else current[i] = target[i];
         chars[i].style.setProperty('--p', current[i].toFixed(3));
+        // Flip with a little hysteresis so a letter on the edge doesn't flicker.
+        const c = chars[i];
+        const flipped = c.classList.contains('vt');
+        if (!flipped && current[i] > SWAP_ON) c.classList.add('vt');
+        else if (flipped && current[i] < SWAP_OFF) c.classList.remove('vt');
       }
       // Tiles glow with the letters around them, fading over a few letter heights.
       for (let t = 0; t < tiles.length; t++) {
@@ -192,6 +214,7 @@ const words = text.split(/\s+/).filter(Boolean);
     };
 
     const layout = () => {
+      for (const c of chars) c.classList.remove('vt');
       restOpsz();
       restoreSpaces();
       lock();

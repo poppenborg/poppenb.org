@@ -51,7 +51,10 @@ export function designTests() {
           // Code uses the system monospace stack (approved by Leonard, 2026-11-25).
           if (el.closest('code, pre, kbd, samp') && /monospace$/.test(getComputedStyle(el).fontFamily)) continue;
           // VT323 for headings (except the landing hook) and navigation (approved by Leonard, 2026-11-25).
-          const display = !!el.closest('h1:not(.hook), h2, h3, header nav, footer nav, header > a[href="/"]') && !el.closest('.todo');
+          // Hook letters swap to VT323 only while emphasised (Leonard, 2026-11-26).
+          const display =
+            (!!el.closest('h1:not(.hook), h2, h3, header nav, footer nav, header > a[href="/"]') || el.matches('.hook .c.vt')) &&
+            !el.closest('.todo');
           const want = display ? 'VT323' : 'Literata Variable';
           if (first !== want) out.add(`${el.tagName.toLowerCase()}${el.className ? '.' + el.className : ''}: ${first} (expected ${want})`);
         }

@@ -29,7 +29,7 @@ A personal site for a professional audience, mainly other engineers. It shows Le
 The nav is the site name (links home), then Projects, plus Posts once a post is published. The footer repeats the nav and adds Imprint, Privacy, RSS and Leonard's social and email links.
 
 ### Landing page
-1. **Visual hook: one subtle interactive element.** A large typographic line set in Literata. Literata is a variable font, so the line's weight and optical size respond gently to the pointer on desktop and to scroll on touch screens. It sits still under `prefers-reduced-motion`. No canvas and no animation library; it must not make the page slower to show content. The line's text comes from content.
+1. **Visual hook: one subtle interactive element.** A large typographic line set in Literata. Literata is a variable font, so the line's weight and optical size respond gently to the pointer on desktop and to scroll on touch screens. Letters that swell the most flip into amber VT323 and flip back as the pointer or scroll moves on (the "swap", chosen by Leonard 2026-11-26). The rest of the line stays in Literata, and lines never re-wrap. It sits still under `prefers-reduced-motion`. No canvas and no animation library; it must not make the page slower to show content. The line's text comes from content.
    - **Background illustration** (requested by Leonard, 2026-11-26): Leonard's square corner-grid illustration (`src/assets/hook-grid.svg`, inlined) sits behind the hook, decorative and hidden from screen readers. Its tiles rest in `--rule` and warm towards amber (at most 25%) as the letters near them swell, so it moves with the hook and stays still under `prefers-reduced-motion`. No caption.
 2. A short intro of two or three sentences, from content.
 3. The latest three projects: title, one-line summary, year, and status.
@@ -58,8 +58,8 @@ Any missing fact renders as a visible `TODO` and is reported. Claude never write
 ## Design
 
 - **Fonts:** both self-hosted via Fontsource (no Google Fonts request, so nothing in the privacy policy). Adding another font needs Leonard's OK.
-  - **VT323** (approved by Leonard, 2026-11-25) for headings (page titles, section and prose headings) and navigation (site name, header nav, footer nav). The landing hook stays in Literata, because it needs Literata's variable weight and optical-size axes.
-  - **Literata** (variable) for everything else: body text, the hook, lists and the small tracked uppercase labels.
+  - **VT323** (approved by Leonard, 2026-11-25) for headings (page titles, section and prose headings) and navigation (site name, header nav, footer nav). The landing hook is Literata at rest, and only its most emphasised letters swap to VT323 (see Landing page).
+  - **Literata** (variable) for everything else: body text, the hook at rest, lists and the small tracked uppercase labels.
   - Code uses the system monospace stack (approved by Leonard, 2026-11-25).
 - **Theme: dark only.** No light mode and no toggle. `color-scheme: dark`.
 - **Colour tokens:** defined in DESIGN.md.
