@@ -8,4 +8,5 @@ links:
   - { label: LinkedIn, url: 'https://www.linkedin.com/in/leonard-poppenborg' }
 ---
 
-Sample intro paragraph. It stands in for two or three sentences of introduction, long enough to show how the intro wraps under the hook on a narrow phone screen and on a wide desktop.
+A space for all my projects and topics I encounter.<br>
+Whether ambitious or small but interesting at their core.
