@@ -7,7 +7,7 @@ Traunsteiner Str 5<br>
 
 ### Kontakt
 
-E-Mail: leonard.poppenborg@gmail.com
+E-Mail: leonardpoppenborg@gmail.com
 
 ### Redaktionell verantwortlich
 

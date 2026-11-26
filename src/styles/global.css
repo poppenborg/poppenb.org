@@ -145,6 +145,11 @@ h3,
 .prose > * + * {
   margin-top: 1.1em;
 }
+.prose a {
+  /* Long URLs in Leonard's texts must wrap at 375 px. */
+  overflow-wrap: anywhere;
+}
+
 .prose p,
 .prose li {
   hanging-punctuation: first;

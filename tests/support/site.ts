@@ -33,7 +33,10 @@ export interface Entry {
   body: string;
 }
 
-/** Entries of a collection, read the way src/content.config.ts reads them. */
+/**
+ * Entries of a collection, read the way src/content.config.ts reads them:
+ * a fixture is skipped when real content has an entry with the same id.
+ */
 export function entries(collection: 'projects' | 'posts' | 'site', build: Build): Entry[] {
   const dirs = [`src/content/${collection}`];
   if (build === 'fixtures') dirs.push(`src/fixtures/${collection}`);
@@ -42,12 +45,14 @@ export function entries(collection: 'projects' | 'posts' | 'site', build: Build)
     if (!existsSync(dir)) continue;
     for (const f of readdirSync(dir, { recursive: true, encoding: 'utf8' })) {
       if (!/\.mdx?$/.test(f)) continue;
+      const id = f.split('/').pop()!.replace(/\.mdx?$/, '');
+      if (out.some((e) => e.id === id)) continue;
       const raw = readFileSync(join(dir, f), 'utf8');
-      const m = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
+      const m = raw.match(/^---\r?\n(?:([\s\S]*?)\r?\n)?---\r?\n?([\s\S]*)$/);
       out.push({
-        id: f.split('/').pop()!.replace(/\.mdx?$/, ''),
+        id,
         file: join(dir, f),
-        data: (m ? parse(m[1]) : {}) ?? {},
+        data: (m?.[1] ? parse(m[1]) : {}) ?? {},
         body: m ? m[2] : raw,
       });
     }
