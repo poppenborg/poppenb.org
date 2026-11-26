@@ -12,10 +12,9 @@ interface Props {
   /** Social card image URL (absolute or root-relative). */
   image?: string;
   type?: 'website' | 'article';
-  noindex?: boolean;
 }
 
-const { title, description, image, type = 'website', noindex = false } = Astro.props;
+const { title, description, image, type = 'website' } = Astro.props;
 const home = await getSiteText('home');
 const hasPosts = (await getPosts()).length > 0;
 
@@ -38,11 +37,11 @@ const ogImageAlt = image ? undefined : 'Abstract illustration: a grid of rounded
     <meta name="theme-color" content="#14130F" />
     <title>{fullTitle}</title>
     {desc && <meta name="description" content={desc} />}
-    {noindex && <meta name="robots" content="noindex" />}
+    {/* The whole site stays out of search engines (SPEC.md "Technical"). */}
+    <meta name="robots" content="noindex" />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="alternate" type="application/rss+xml" title={siteName} href="/rss.xml" />
-    <link rel="sitemap" href="/sitemap-index.xml" />
 
     <meta property="og:type" content={type} />
     <meta property="og:site_name" content={siteName} />

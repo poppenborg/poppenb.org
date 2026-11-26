@@ -30,18 +30,6 @@ export function postTests() {
     }
   });
 
-  test('hidden rule: the sitemap lists /posts/ exactly when a post is published', async ({ request }, info) => {
-    const build = buildOf(info);
-    const posts = postsNewestFirst(build);
-    const index = await (await request.get('/sitemap-index.xml')).text();
-    const maps = [...index.matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => new URL(m[1]).pathname);
-    const urls = (await Promise.all(maps.map(async (m) => (await request.get(m)).text())))
-      .flatMap((x) => [...x.matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => new URL(m[1]).pathname));
-    const postUrls = urls.filter((u) => u.startsWith('/posts/'));
-    if (posts.length === 0) expect(postUrls).toEqual([]);
-    else expect(postUrls.sort()).toEqual(['/posts/', ...posts.map((p) => `/posts/${p.id}/`)].sort());
-  });
-
   test('RSS (/rss.xml) has an entry for every published post', async ({ request }, info) => {
     const rss = await (await request.get('/rss.xml')).text();
     for (const p of postsNewestFirst(buildOf(info))) expect(rss, p.file).toContain(`/posts/${p.id}/`);
@@ -51,7 +39,7 @@ export function postTests() {
     const build = buildOf(info);
     const drafts = entries('posts', build).filter((e) => e.data.draft === true);
     const files = [...builtPages(build).map((p) => builtHtml(build, p))];
-    for (const f of ['rss.xml', 'sitemap-0.xml']) {
+    for (const f of ['rss.xml']) {
       const path = join(OUT_DIR[build], f);
       if (existsSync(path)) files.push(readFileSync(path, 'utf8'));
     }

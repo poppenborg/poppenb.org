@@ -1,6 +1,6 @@
-/** SPEC.md "Technical": titles, descriptions, Open Graph, RSS and sitemap. */
+/** SPEC.md "Technical": titles, descriptions, Open Graph, RSS, and noindex on every page. */
 import { expect, test } from '@playwright/test';
-import { buildOf, builtPages, open, postsNewestFirst, PRODUCTION, projectsNewestFirst } from './site';
+import { buildOf, builtHtml, builtPages, open, postsNewestFirst, PRODUCTION, projectsNewestFirst } from './site';
 
 export function metaTests() {
   test('every page has a title, description, canonical URL and Open Graph tags', async ({ page }, info) => {
@@ -55,20 +55,18 @@ export function metaTests() {
     for (const p of postsNewestFirst(build)) expect(xml, p.file).toContain(`${PRODUCTION}/posts/${p.id}/`);
   });
 
-  test('the sitemap lists every page on the production domain (except 404, and /posts/ while hidden)', async ({ request }, info) => {
+  test('every page asks search engines not to index it', async ({}, info) => {
     const build = buildOf(info);
-    const index = await request.get('/sitemap-index.xml');
-    expect(index.status()).toBe(200);
-    const maps = [...(await index.text()).matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => m[1]);
-    const urls: string[] = [];
-    for (const m of maps) {
-      expect(m.startsWith(PRODUCTION + '/')).toBe(true);
-      urls.push(...[...(await (await request.get(new URL(m).pathname)).text()).matchAll(/<loc>(.*?)<\/loc>/g)].map((x) => x[1]));
-    }
-    const hidden = postsNewestFirst(build).length === 0;
-    const expected = builtPages(build)
-      .filter((p) => p !== '/404.html' && !(hidden && p.startsWith('/posts/')))
-      .map((p) => PRODUCTION + p);
-    expect(urls.sort()).toEqual(expected.sort());
+    const missing = builtPages(build).filter(
+      (p) => !/<meta name="robots" content="noindex[^"]*"/.test(builtHtml(build, p)),
+    );
+    expect(missing, 'pages without <meta name="robots" content="noindex">').toEqual([]);
+  });
+
+  test('no sitemap is published, and crawlers may still fetch pages to see the noindex', async ({ request }) => {
+    for (const path of ['/sitemap-index.xml', '/sitemap-0.xml']) expect((await request.get(path)).status(), path).toBe(404);
+    // A robots.txt "Disallow" would hide the noindex tag from crawlers, so linked URLs could still be listed.
+    const robots = await request.get('/robots.txt');
+    if (robots.status() === 200) expect(await robots.text()).not.toMatch(/^\s*Disallow:\s*\/\s*$/im);
   });
 }
