@@ -24,6 +24,7 @@ Leonard's personal website (poppenb.org): a static site built with Astro 7, Type
 - Follow DESIGN.md for colours, fonts and spacing. Ask before adding new ones.
 - Must work at 375 px wide.
 - All pages must be set up in way that they are not indexed by search engines
+- External links open in a new tab (`target="_blank" rel="noopener noreferrer"`). In components, spread `externalAttrs(url)` from `src/lib/external-links.mjs` onto every `<a>` whose URL can be external; Markdown is handled by the plugin. `tests/links*.spec.ts` checks every built page.
 
 SPEC.md is the approved scope for v1, including what is out of scope and the "done when" checklist.
 
@@ -44,6 +45,7 @@ SPEC.md is the approved scope for v1, including what is out of scope and the "do
 - With `FIXTURES=1` the loaders also read `src/fixtures/`, skipping any sample whose id already exists in `src/content/` (real content wins). Never set it for a deploy.
 - A missing fact renders through `src/components/Todo.astro`, which also logs `[TODO]` during the build.
 - **Hidden posts:** nav, footer and landing only show posts when `getPosts()` is non-empty. `/posts/` is always built.
+- **External links:** `src/lib/external-links.mjs` holds the rule once: `isExternal`, `externalAttrs` for components, and `externalLinksPlugin`, a Sätteri hast plugin wired in `astro.config.mjs` (Astro 7's Markdown processor is Sätteri, so `markdown.rehypePlugins` does not work without installing the unified processor).
 - **No search engines:** `Base.astro` puts `noindex` on every page, and there is no sitemap or `robots.txt` (a `Disallow` would stop crawlers from seeing the noindex).
 - Layouts: `Base.astro` (head, meta tags, header, footer, optional GoatCounter script), `Article.astro` (reading layout for projects and posts), `Legal.astro` (imprint, privacy).
 - The landing hook (`src/components/Hook.astro`) is the only client JS. It splits the line into per-character spans, sets a `--p` intensity (0 to 1) on each, and CSS maps that to font weight, optical size (`opsz`, from the size-matched value at rest down to 24) and amber colour. Letters above `SWAP_ON` get the `.vt` class and render in VT323 at 1.3em (Literata's x-height), dropping back below `SWAP_OFF`. It locks line breaks at the widest each letter can get (heaviest Literata, lowest optical size, and VT323's 0.52em), so nothing re-wraps, and does nothing under `prefers-reduced-motion`.

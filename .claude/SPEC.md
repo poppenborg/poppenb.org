@@ -26,7 +26,10 @@ A personal site for a professional audience, mainly other engineers. It shows Le
 | Privacy | `/privacy/` | Legally required. Linked from the footer. |
 | 404 | `/404.html` | Short, on-voice, links home. |
 
-The nav is the site name (links home), then Projects, plus Posts once a post is published. The footer repeats the nav and adds Imprint, Privacy, RSS and Leonard's social and email links.
+The nav is the site name (links home), then Projects, plus Posts once a post is published. The footer repeats the nav and adds Imprint, Privacy and Leonard's social and email links. It does not link the RSS feed (Leonard, 2026-11-26); the feed stays at `/rss.xml` and is announced in each page's `<head>`.
+
+### Links
+- Every external link (an `http(s)` URL to a host other than poppenb.org) opens in a new tab with `target="_blank"` and `rel="noopener noreferrer"` (Leonard, 2026-11-26). This covers links in components and links written in Markdown content. Links within the site, and `mailto:` links, open as usual.
 
 ### Landing page
 1. **Visual hook: one subtle interactive element.** A large typographic line set in Literata. Literata is a variable font, so the line's weight and optical size respond gently to the pointer on desktop and to scroll on touch screens. Letters that swell the most flip into amber VT323 and flip back as the pointer or scroll moves on (the "swap", chosen by Leonard 2026-11-26). The rest of the line stays in Literata, and lines never re-wrap. It sits still under `prefers-reduced-motion`. No canvas and no animation library; it must not make the page slower to show content. The line's text comes from content.
@@ -97,4 +100,5 @@ Any missing fact renders as a visible `TODO` and is reported. Claude never write
 - [ ] No request leaves poppenb.org except the analytics script (fonts are self-hosted).
 - [ ] Lighthouse on the landing page scores at least 95 for performance and 100 for accessibility.
 - [ ] Every page has a `noindex` robots meta tag, and no sitemap is published.
+- [ ] Every external link on every page opens in a new tab with `rel="noopener noreferrer"`, and no internal link does.
 - [ ] The site deploys from `main` to https://poppenb.org.
