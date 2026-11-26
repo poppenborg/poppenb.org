@@ -29,7 +29,7 @@ test('fonts are self-hosted via Fontsource, with no Google Fonts', () => {
   expect(css).not.toMatch(/fonts\.googleapis|fonts\.gstatic/);
 });
 
-test('site URL is the production domain (sitemap, RSS and canonical links use it)', () => {
+test('site URL is the production domain (RSS, canonical and Open Graph links use it)', () => {
   expect(readFileSync('astro.config.mjs', 'utf8')).toContain(`site: '${PRODUCTION}'`);
 });
 

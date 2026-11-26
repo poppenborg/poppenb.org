@@ -42,7 +42,7 @@ The nav is the site name (links home), then Projects, plus Posts once a post is 
 
 ### Posts
 - The machinery is fully built (collection, index, post page, RSS) so a spontaneous post can go live by adding one Markdown file.
-- **Hidden rule:** while no non-draft post exists, `/posts/` is not linked anywhere, isn't in the sitemap, and the landing page shows no posts section. Drafts never appear in a production build.
+- **Hidden rule:** while no non-draft post exists, `/posts/` is not linked anywhere and the landing page shows no posts section. Drafts never appear in a production build.
 - The post layout follows DESIGN.md: a "◂ Posts" back link, a tracked uppercase metadata block (Published, Reading time, Topics), a centered `— END —`, and then "Latest posts".
 
 ## Content model
@@ -70,7 +70,8 @@ Any missing fact renders as a visible `TODO` and is reported. Claude never write
 - Astro 7 static build, TypeScript strict. No client framework. A small amount of plain JS only for the hook.
 - **Hosting:** GitHub Pages, deployed by a GitHub Actions workflow on push to `main`, with poppenb.org as a custom domain over HTTPS.
 - **Analytics:** GoatCounter (cookieless, no consent banner). It must be disclosed on the privacy page.
-- RSS at `/rss.xml` (posts and projects) and a sitemap.
+- RSS at `/rss.xml` (posts and projects). No sitemap.
+- **Hidden from search engines:** every page carries `<meta name="robots" content="noindex">` (Leonard, 2026-11-26). There is no `robots.txt` block, because crawlers must be able to fetch a page to see its noindex. Social cards (Open Graph) still work.
 - Each page has a title, description and Open Graph tags. The cover image is used for social cards when present; otherwise the card is `public/og.png`, the landing illustration rendered by `scripts/og-image.mjs` (requested by Leonard, 2026-11-26).
 - `npm run shots`: Playwright screenshots of every page at 375 px and 1280 px, saved to `shots/` (git-ignored).
 
@@ -90,9 +91,10 @@ Any missing fact renders as a visible `TODO` and is reported. Claude never write
 
 - [ ] `npm run check` reports 0 errors and `npm run build` succeeds with no warnings except the expected empty-posts notice.
 - [ ] Landing, projects index, at least one project page, imprint, privacy and 404 render. Every missing fact shows a visible `TODO`, and the TODOs are listed to Leonard.
-- [ ] With zero published posts, no link to `/posts/` exists anywhere and the sitemap omits it. Adding one non-draft post makes the nav link, landing section and RSS entry appear without other changes.
+- [ ] With zero published posts, no link to `/posts/` exists anywhere. Adding one non-draft post makes the nav link, landing section and RSS entry appear without other changes.
 - [ ] `npm run shots` captures every page at 375 px and 1280 px, with no horizontal scroll and nothing clipped at 375 px. Screenshots are checked against DESIGN.md.
 - [ ] All text meets WCAG AA contrast, every interactive element has a visible focus style, and the hook is still under `prefers-reduced-motion`.
 - [ ] No request leaves poppenb.org except the analytics script (fonts are self-hosted).
 - [ ] Lighthouse on the landing page scores at least 95 for performance and 100 for accessibility.
+- [ ] Every page has a `noindex` robots meta tag, and no sitemap is published.
 - [ ] The site deploys from `main` to https://poppenb.org.
