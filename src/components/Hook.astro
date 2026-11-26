@@ -16,7 +16,7 @@ const { text } = Astro.props;
 const words = text.split(/\s+/).filter(Boolean);
 ---
 
-<h1 class="hook" data-hook>
+<h1 class="hook" data-hook data-variant="phosphor">
   <span class="sr-only">{text}</span>
   <span class="lines" aria-hidden="true"
     >{
@@ -112,8 +112,11 @@ const words = text.split(/\s+/).filter(Boolean);
   const hook = document.querySelector<HTMLElement>('[data-hook]');
   const lines = hook?.querySelector<HTMLElement>('.lines');
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const variant = new URLSearchParams(location.search).get('v');
-  if (hook && variant) hook.dataset.variant = variant;
+  // Exploration: phosphor by default; ?v=decode, ?v=swap or ?v=literata to compare.
+  const asked = new URLSearchParams(location.search).get('v');
+  if (hook && asked === 'literata') delete hook.dataset.variant;
+  else if (hook && asked) hook.dataset.variant = asked;
+  const variant = hook?.dataset.variant;
   const GLYPHS = '#%&*+=<>/\\|_$@01ABCDEFGHJKLMNPRSTUVXYZ';
 
   // Rest at the optical size that matches the rendered size, as
