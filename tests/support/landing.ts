@@ -108,6 +108,45 @@ export function landingTests() {
       await context.close();
     });
 
+    test('the illustration sits behind the hook, decorative, and warms with it', async ({ page }) => {
+      await open(page, '/');
+      const art = page.locator('main [data-hook-art]');
+      await expect(art).toHaveAttribute('aria-hidden', 'true');
+      const tiles = art.locator('path');
+      expect(await tiles.count(), 'tiles of the corner-grid illustration').toBeGreaterThan(10);
+      const [artBox, hookBox] = [(await art.boundingBox())!, (await page.locator('main h1').first().boundingBox())!];
+      const overlap =
+        Math.min(artBox.x + artBox.width, hookBox.x + hookBox.width) > Math.max(artBox.x, hookBox.x) &&
+        Math.min(artBox.y + artBox.height, hookBox.y + hookBox.height) > Math.max(artBox.y, hookBox.y);
+      expect(overlap, 'illustration overlaps the hook').toBe(true);
+      expect(Math.abs(artBox.width - artBox.height), 'illustration is square').toBeLessThan(2);
+      const z = await art.evaluate((el) => Number(getComputedStyle(el).zIndex));
+      expect(z, 'illustration is behind the text').toBeLessThan(0);
+      const fills = () => tiles.evaluateAll((ps) => ps.map((p) => getComputedStyle(p).fill));
+      await page.waitForTimeout(2500);
+      const rest = await fills();
+      const box = hookBox;
+      await page.mouse.move(box.x + 5, box.y + box.height / 2);
+      await page.mouse.move(box.x + box.width * 0.6, box.y + box.height / 2, { steps: 8 });
+      await page.waitForTimeout(800);
+      expect(await fills(), 'tiles change colour with the hook').not.toEqual(rest);
+    });
+
+    test('prefers-reduced-motion: the illustration sits still', async ({ browser }, info) => {
+      const context = await browser.newContext({ baseURL: info.project.use.baseURL, reducedMotion: 'reduce' });
+      const page = await context.newPage();
+      await open(page, '/');
+      const tiles = page.locator('main [data-hook-art] path');
+      const fills = () => tiles.evaluateAll((ps) => ps.map((p) => getComputedStyle(p).fill));
+      const first = await fills();
+      expect(new Set(first).size, 'all tiles at rest').toBe(1);
+      const box = (await page.locator('main h1').first().boundingBox())!;
+      await page.mouse.move(box.x + box.width / 3, box.y + box.height / 2, { steps: 8 });
+      await page.waitForTimeout(1000);
+      expect(await fills()).toEqual(first);
+      await context.close();
+    });
+
     test('no canvas and no animation library: only a little first-party JS', async ({ page }) => {
       const scripts: { url: string; bytes: number }[] = [];
       page.on('response', async (r) => {

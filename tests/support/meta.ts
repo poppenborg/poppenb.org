@@ -34,6 +34,16 @@ export function metaTests() {
     }
   });
 
+  test('pages without a cover use the landing illustration as their social card', async ({ page, request }) => {
+    await open(page, '/');
+    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', `${PRODUCTION}/og.png`);
+    await expect(page.locator('meta[property="og:image:alt"]')).toHaveAttribute('content', /\S/);
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image');
+    const res = await request.get('/og.png');
+    expect(res.status()).toBe(200);
+    expect(res.headers()['content-type']).toContain('image/png');
+  });
+
   test('RSS at /rss.xml lists every published project and post', async ({ request }, info) => {
     const res = await request.get('/rss.xml');
     expect(res.status()).toBe(200);
