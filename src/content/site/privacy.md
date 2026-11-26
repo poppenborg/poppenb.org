@@ -61,8 +61,6 @@ Leonard Poppenborg
 Traunsteiner Str 5  
 81549 München
 
-Telefon: [Telefonnummer der verantwortlichen Stelle]  
-E-Mail: [E-Mail-Adresse der verantwortlichen Stelle]
 
 Verantwortliche Stelle ist die natürliche oder juristische Person, die allein oder gemeinsam mit anderen über die Zwecke und Mittel der Verarbeitung von personenbezogenen Daten (z. B. Namen, E-Mail-Adressen o. Ä.) entscheidet.
 

@@ -3,7 +3,7 @@ name: poppenb.org
 hook: Hello world.
 description: Sample site description for layout checks.
 links:
-  - { label: Email, url: 'mailto:leonard.poppenborg@gmail.com' }
+  - { label: Email, url: 'mailto:leonardpoppenborg@gmail.com' }
   - { label: GitHub, url: 'https://github.com/poppenborg' }
   - { label: LinkedIn, url: 'https://www.linkedin.com/in/leonard-poppenborg' }
 ---
