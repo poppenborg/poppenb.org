@@ -23,7 +23,10 @@ const siteName = home?.data.name ?? SITE.domain;
 const fullTitle = title ? `${title} · ${siteName}` : siteName;
 const desc = description ?? home?.data.description;
 const canonical = new URL(Astro.url.pathname, Astro.site);
-const ogImage = image ? new URL(image, Astro.site).href : undefined;
+// Without a page image, the social card is the landing illustration
+// (public/og.png, rendered by scripts/og-image.mjs).
+const ogImage = new URL(image ?? '/og.png', Astro.site).href;
+const ogImageAlt = image ? undefined : 'Abstract illustration: a grid of rounded tiles in warm grey, glowing amber at the upper left.';
 ---
 
 <!doctype html>
@@ -46,8 +49,9 @@ const ogImage = image ? new URL(image, Astro.site).href : undefined;
     <meta property="og:title" content={title ?? siteName} />
     <meta property="og:url" content={canonical} />
     {desc && <meta property="og:description" content={desc} />}
-    {ogImage && <meta property="og:image" content={ogImage} />}
-    <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+    <meta property="og:image" content={ogImage} />
+    {ogImageAlt && <meta property="og:image:alt" content={ogImageAlt} />}
+    <meta name="twitter:card" content="summary_large_image" />
 
     {
       SITE.goatcounter && (
