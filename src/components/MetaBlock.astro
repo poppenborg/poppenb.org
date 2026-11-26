@@ -1,4 +1,6 @@
 ---
+import { externalAttrs } from '../lib/external-links.mjs';
+
 /** Label-above-value facts block, e.g. Published / Reading time / Topics. */
 interface Props {
   items: { label: string; value: string; href?: string }[];
@@ -11,7 +13,7 @@ const { items } = Astro.props;
     items.map((i) => (
       <div>
         <dt class="label">{i.label}</dt>
-        <dd>{i.href ? <a href={i.href}>{i.value}</a> : i.value}</dd>
+        <dd>{i.href ? <a href={i.href} {...externalAttrs(i.href)}>{i.value}</a> : i.value}</dd>
       </div>
     ))
   }

@@ -60,13 +60,14 @@ test.describe('Structure: header nav', () => {
 });
 
 test.describe('Structure: footer', () => {
-  test('footer repeats the nav and adds Imprint, Privacy and RSS', async ({ page }, info) => {
+  test('footer repeats the nav and adds Imprint and Privacy, but no RSS link', async ({ page }, info) => {
     await open(page, '/');
     const footer = page.locator('footer').last();
     await expect(footer.locator('a[href="/projects/"]')).toBeVisible();
     await expect(footer.locator('a[href="/imprint/"]')).toBeVisible();
     await expect(footer.locator('a[href="/privacy/"]')).toBeVisible();
-    await expect(footer.locator('a[href="/rss.xml"]')).toBeVisible();
+    // The feed stays at /rss.xml (announced in <head>), but the footer doesn't link it (Leonard, 2026-11-26).
+    await expect(footer.locator('a[href="/rss.xml"]')).toHaveCount(0);
     const hasPosts = postsNewestFirst(buildOf(info)).length > 0;
     await expect(footer.locator('a[href="/posts/"]')).toHaveCount(hasPosts ? 1 : 0);
   });
