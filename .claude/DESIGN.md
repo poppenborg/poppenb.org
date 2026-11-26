@@ -13,7 +13,8 @@ The list above describes the reference site. Where it conflicts with SPEC.md (fo
 
 **Fonts** (both self-hosted):
 - **VT323** (`--font-display`, approved by Leonard 2026-11-25): headings (h1, h2, h3, section headings) and navigation (site name, header nav, footer nav). It has a single weight (400), so it is never bolded, and it is set in sentence case without tracking, roughly 1.3x the size Literata would use.
-- **Literata**, variable (`wght` and `opsz` axes; `--font`): body text, the landing hook (which needs the variable axes), list titles and labels. Labels are small, uppercase, letter-spaced Literata.
+- **Literata**, variable (`wght` and `opsz` axes; `--font`): body text, the landing hook at rest (it needs the variable axes to swell), list titles and labels. Labels are small, uppercase, letter-spaced Literata.
+- **The hook swap** (Leonard 2026-11-26): hook letters swelled past about half intensity flip into VT323 in amber, set at 1.3em so VT323's x-height matches Literata's. They flip back below about 0.4, so edges don't flicker.
 - Code uses the system monospace stack (approved by Leonard 2026-11-25; no web font is loaded for it).
 
 **Theme:** dark only (`color-scheme: dark`). No light mode, no toggle.
