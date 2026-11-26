@@ -41,7 +41,7 @@ SPEC.md is the approved scope for v1, including what is out of scope and the "do
 
 - Content collections are defined in `src/content.config.ts`: `projects`, `posts` and `site` (the texts `home`, `imprint`, `privacy`). The schemas there are the single source of truth for frontmatter; `src/fixtures/` shows a valid example of each. An entry's id is its file name, so a project lives at `/projects/<file-name>/`.
 - Read content only through `src/lib/content.ts` (`getProjects`, `getPosts`, `getSiteText`), never `getCollection` directly. It applies the draft filter (drafts show in `astro dev` only) and newest-first sorting.
-- With `FIXTURES=1` the loaders also read `src/fixtures/`. Never set it for a deploy.
+- With `FIXTURES=1` the loaders also read `src/fixtures/`, skipping any sample whose id already exists in `src/content/` (real content wins). Never set it for a deploy.
 - A missing fact renders through `src/components/Todo.astro`, which also logs `[TODO]` during the build.
 - **Hidden posts:** nav, footer and landing only show posts when `getPosts()` is non-empty. `/posts/` is always built.
 - **No search engines:** `Base.astro` puts `noindex` on every page, and there is no sitemap or `robots.txt` (a `Disallow` would stop crawlers from seeing the noindex).

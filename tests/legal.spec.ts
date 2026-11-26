@@ -11,7 +11,7 @@ for (const id of ['imprint', 'privacy'] as const) {
     const entry = siteText(id, 'site');
     expect(entry?.body.trim(), `src/content/site/${id}.md`).toBeTruthy();
     await open(page, `/${id}/`);
-    const firstWords = entry!.body.trim().replace(/[*_`#>\[\]]|\(.*?\)/g, '').split(/\s+/).slice(0, 6).join(' ');
+    const firstWords = entry!.body.trim().replace(/<[^>]*>/g, ' ').replace(/[*_`#>\[\]]|\(.*?\)/g, '').split(/\s+/).slice(0, 6).join(' ');
     await expect(page.locator('main')).toContainText(firstWords);
   });
 
