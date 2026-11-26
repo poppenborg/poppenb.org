@@ -65,12 +65,56 @@ const words = text.split(/\s+/).filter(Boolean);
     font-weight: 860;
     font-variation-settings: 'opsz' var(--opsz-swell);
   }
+  /* ---- Exploration: VT323 variants, picked with ?v= ---- */
+  .hook[data-variant] {
+    font-family: var(--font-display);
+    font-size: clamp(3.3rem, 1.5rem + 9vw, 7.25rem);
+    letter-spacing: 0;
+    line-height: 0.95;
+  }
+  .hook[data-variant] .c,
+  .hook[data-variant].measuring .c {
+    font-weight: 400;
+    font-variation-settings: normal;
+  }
+  /* A: phosphor. Letters lift and glow like an amber CRT. */
+  .hook[data-variant='phosphor'] .c {
+    display: inline-block;
+    transform: translateY(calc(var(--p) * -0.07em));
+    text-shadow:
+      0 0 calc(var(--p) * 0.12em) color-mix(in oklab, var(--accent) calc(var(--p) * 90%), transparent),
+      0 0 calc(var(--p) * 0.45em) color-mix(in oklab, var(--accent) calc(var(--p) * 55%), transparent);
+  }
+  /* C: swap. Literata at rest; letters flip to VT323 near the pointer. */
+  .hook[data-variant='swap'] {
+    font-family: var(--font);
+    font-size: clamp(2.6rem, 1.2rem + 7vw, 5.75rem);
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+  }
+  .hook[data-variant='swap'] .c {
+    font-weight: 340;
+    font-variation-settings: 'opsz' var(--opsz-rest);
+  }
+  .hook[data-variant='swap'] .c.vt {
+    font-family: var(--font-display);
+    font-size: 1.24em;
+    line-height: 0;
+    letter-spacing: 0;
+  }
+  .hook[data-variant='swap'].measuring .c {
+    font-family: var(--font);
+    font-weight: 400;
+  }
 </style>
 
 <script>
   const hook = document.querySelector<HTMLElement>('[data-hook]');
   const lines = hook?.querySelector<HTMLElement>('.lines');
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const variant = new URLSearchParams(location.search).get('v');
+  if (hook && variant) hook.dataset.variant = variant;
+  const GLYPHS = '#%&*+=<>/\\|_$@01ABCDEFGHJKLMNPRSTUVXYZ';
 
   // Rest at the optical size that matches the rendered size, as
   // font-optical-sizing: auto would (it is overridden once opsz is explicit).
@@ -127,6 +171,13 @@ const words = text.split(/\s+/).filter(Boolean);
           moving = true;
         } else current[i] = target[i];
         chars[i].style.setProperty('--p', current[i].toFixed(3));
+        if (variant === 'swap') chars[i].classList.toggle('vt', current[i] > 0.45);
+        if (variant === 'decode') {
+          const c = chars[i];
+          c.dataset.ch ??= c.textContent ?? '';
+          const busy = target[i] > 0.25 && Math.abs(d) > 0.01;
+          c.textContent = busy ? GLYPHS[(Math.random() * GLYPHS.length) | 0] : c.dataset.ch;
+        }
       }
       // Tiles glow with the letters around them, fading over a few letter heights.
       for (let t = 0; t < tiles.length; t++) {
