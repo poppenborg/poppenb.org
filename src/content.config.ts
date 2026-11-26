@@ -1,3 +1,4 @@
+import { existsSync, readdirSync } from 'node:fs';
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
@@ -6,12 +7,25 @@ import { z } from 'astro/zod';
  * Real content lives in src/content/ and belongs to Leonard.
  * With FIXTURES=1 (used by `npm run shots:fixtures`), sample entries from
  * src/fixtures/ are added so every layout can be checked. Never deploy with it.
+ * Real content wins: a sample is skipped when src/content/ has an entry with
+ * the same id (for example Leonard's own site/home.md).
  */
 const withFixtures = process.env.FIXTURES === '1';
 
+/** Markdown files in a folder, as `[id, path]` (the id is the file name). */
+function markdownFiles(dir: string): [string, string][] {
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir, { recursive: true, encoding: 'utf8' })
+    .filter((f) => /\.mdx?$/.test(f))
+    .map((f) => [f.split('/').pop()!.replace(/\.mdx?$/, ''), `${dir}/${f}`]);
+}
+
 function source(name: string) {
   const patterns = [`src/content/${name}/**/*.{md,mdx}`];
-  if (withFixtures) patterns.push(`src/fixtures/${name}/**/*.{md,mdx}`);
+  if (withFixtures) {
+    const real = new Set(markdownFiles(`src/content/${name}`).map(([id]) => id));
+    for (const [id, path] of markdownFiles(`src/fixtures/${name}`)) if (!real.has(id)) patterns.push(path);
+  }
   return glob({
     pattern: patterns,
     base: '.',
